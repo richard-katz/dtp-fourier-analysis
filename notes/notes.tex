@@ -1,0 +1,1146 @@
+\documentclass[11pt,twoside,a4paper]{article}
+\usepackage{a4wide,xspace,subfigure,amsmath,amssymb,multicol,graphicx,lscape,color}
+\usepackage{epic,eepic,sidecap,paralist,verbatim,upquote}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[small]{caption}
+\usepackage[colorlinks=true,citecolor=darkblue,linkcolor=darkblue,
+            urlcolor=darkblue]{hyperref}
+\usepackage{bookmark}
+\input{defs}
+
+\newcommand{\runtitle}{Fourier analysis}
+
+\begin{document}
+
+\section{Fourier Series}
+\label{sec:fourierseries}
+
+\paragraph{In this section} we'll learn about how a finite, periodic
+function can be expressed as a sum of sine and cosine functions of
+different amplitudes and frequencies. We'll learn how to calculate all
+of the terms of that sum.  We'll be doing only analytical maths in
+this lecture; no \Mlab stuff.  Two books that should be helpful for
+alternative explanations and going beyond the lectures are
+\begin{itemize}
+\item Seeley, RT; \underline{An introduction to Fourier series and
+    integrals}, W.A. Benjamin (New York), 1996.
+\item Riley, Hobson, and Bence; \underline{Mathematical methods for
+    physics and engineering}, Cambridge University Press (Cambridge),
+  2006.
+\end{itemize}
+Both of these are available through the Oxford library system.
+
+\subsection{Aside: coordinate systems and orthogonality}
+
+We're familiar with the concept of Cartesian, three dimensional space:
+any point can be described as the sum of three independent basis
+vectors, pointing in each of the three independent directions,
+\begin{equation}
+  \label{eq:vec}
+  \bv{V} = c_1\ehat_1 + c_2\ehat_2 + c_3\ehat_3 = \sum_{j=1}^3 c_j\ehat_j, 
+\end{equation}
+where
+\begin{align}
+  \ehat_1 &=
+  \left[\begin{array}{c}
+    1 \\ 0 \\ 0
+  \end{array}\right],&
+  \ehat_2 &=
+  \left[\begin{array}{c}
+    0 \\ 1 \\ 0
+  \end{array}\right],&
+  \ehat_3 &=
+  \left[\begin{array}{c}
+    0 \\ 0 \\ 1
+  \end{array}\right]. \nonumber
+\end{align}
+The essential property of these basis vectors is that they are
+\textit{mutually orthogonal}:
+\begin{equation}
+  \label{eq:orthog}
+  \ehat_i\cdot\ehat_j=
+  \begin{cases}
+    1 & \text{if }i=j,\\
+    0 & \text{if }i\ne j.
+  \end{cases}
+\end{equation}
+For example, basis vector 1 contains no amount of basis vector 2; each
+basis vector is entirely independent of the others.  This means that
+we can determine the $y$-value of a vector independently of the $x$
+and $z$-values.  Furthermore, any point in Cartesian space has a
+\textit{unique} set of coordinates.  It is therefore true that any
+vector in Cartesian space can be \textit{decomposed} into a sum of
+basis vectors, as we did above.  To find the, say, $x$-component of a
+vector, one need only take the dot-product of the vector with the
+basis vector in the $x$-direction:
+\begin{displaymath}
+  \bv{V}\cdot\ehat_1 = c_1.
+\end{displaymath}
+This is a trivial example, but it demonstrates a concept that is
+important in understanding Fourier series.
+
+\textit{It turns out that we can decompose functions in a manner
+  similar to vectors}.  Just as a general vector was decomposed into a
+set of simpler basis vectors, a function can be decomposed into a set
+of basis functions.  We'll see how below.
+
+\subsection{Periodic functions: a general definition}
+
+A periodic function is one that repeats, identically, once each
+period, from $-\infty$ to $+\infty$.  If the function is denoted by
+$f(t)$ and the period is $T$, then the following equation defines
+a periodic function
+\begin{equation}
+  \label{eq:defperiodic}
+  f(t+T) = f(t).
+\end{equation}
+
+\begin{SCfigure}[0.5][tb]
+  \centering
+  \includegraphics[height=2in]{../figs/L14/SquareWave}
+  \caption{A square wave with period $T$ and unit amplitude, as
+    described by \autoref{eq:squarewave}.  \vspace{1cm}}
+  \label{fig:sqwave}
+\end{SCfigure}
+
+One obvious example of a periodic function is $\cos t$; it has a
+period of $T=2\pi$, and of course $\cos(t)=\cos(t+2\pi)$, which
+satisfies \autoref{eq:defperiodic}. Here's another example of a
+periodic function:
+\begin{equation}
+  \label{eq:squarewave}
+  f(t) =
+  \begin{cases}
+    -1 & \text{for }-T/2\le t<0,\\
+    +1 & \text{for }0\le t<T/2.
+  \end{cases}
+\end{equation}
+This is called a square wave, and is represented in
+\autoref{fig:sqwave}.
+
+\subsection{The Fourier series}
+
+Amazing but true: any periodic function\footnote{\raggedright Terms
+  and conditions apply, see Riley, Hobson, \& Bence,
+  \underline{Mathematical Methods for Physics and Engineering},
+  Cambridge University Press.}, including the one in
+\autoref{fig:sqwave}, can be represented by the sum of a series of
+sines and cosines.  For a periodic function $g(t)$ with period $T$,
+this series is
+\begin{equation}
+  \label{eq:fourierseries}
+  g(t) = a_0 + \sum_{r=1}^\infty
+  \left[a_r\cos\left(\frac{2\pi r}{T}t\right) +
+    b_r\sin\left(\frac{2\pi r}{T}t\right)\right].
+\end{equation}
+Some remarks about this important equation:
+\begin{itemize}
+\item Compare \autoref{eq:fourierseries} to \autoref{eq:vec}: whereas
+  a vector is composed of different quantities of each basis vector, a
+  periodic function is composed of different quantities of each sine
+  and cosine in the series.  The quantities $c_1,c_2,c_3$ are the
+  \textit{coordinates} of a point in \textit{physical space}. The
+  quantities $a_0,a_1,...$ and $b_1,b_2,...$ are the coordinates of a
+  function in \textit{frequency space}.
+\item The series contains an infinite number of terms; calculating all
+  of them is impractical.  Often, we will sum up a large number, but
+  not all the terms.  Doing this changes \autoref{eq:fourierseries}
+  into an approximation, rather than an equality.
+\item The $a_0$ term in the equation is a constant and represents the
+  mean of the function $g(t)$.  Since $g$ is periodic, we can
+  calculate the mean by averaging over one period
+  \begin{equation}
+    \label{eq:a0term}
+    a_0 = \frac{1}{T}\int_{t_0}^{t_0+T}g(t)\,\infd t.
+  \end{equation}
+  There is no $b_0$ term in the series because $\sin(0)=0$.
+\item The coefficients $a_1,a_2,...$ and $b_1,b_2,...$ are constants
+  to be determined.  Fortunately, it is possible to calculate them,
+  because each term in the series is \textit{mutually orthogonal},
+  just as were the basis vectors in \autoref{eq:orthog}:
+  \begin{subequations}
+    \label{eq:orthogcond}
+    \begin{align}
+      \int_{t_0}^{t_0+T}\cos\left(\frac{2\pi r}{T}t\right)
+      \sin\left(\frac{2\pi s}{T}t\right)\,\infd t&=0 \;\;\;\;\;
+      \text{for all
+        integers $r$ and $s$},\\
+      \int_{t_0}^{t_0+T}\cos\left(\frac{2\pi r}{T}t\right)
+      \cos\left(\frac{2\pi s}{T}t\right)\,\infd t&=
+      \begin{cases}
+        T/2 & \text{for $r=s$} \\
+        0 & \text{for $r\ne s$}
+      \end{cases},\\
+      \int_{t_0}^{t_0+T}\sin\left(\frac{2\pi r}{T}t\right)
+      \sin\left(\frac{2\pi s}{T}t\right)\,\infd t&=
+      \begin{cases}
+        T/2 & \text{for $r=s$} \\
+        0 & \text{for $r\ne s$}
+      \end{cases}.
+    \end{align}
+  \end{subequations}
+  These relations indicate that each entry in the series adds a unique
+  contribution that cannot be obtained by any other entry.
+\end{itemize}
+
+\subsection{Applying the orthogonality conditions}
+To obtain values for the Fourier coefficients, we need a means to
+isolate and solve for them.  The orthogonality conditions
+\eqref{eq:orthogcond} provide a means.  To see this, take
+\autoref{eq:fourierseries}, multiply both sides of the equation by,
+say, $\cos(2\pi s t/T)$, and integrate over one period.  This gives
+\begin{multline}
+  \label{eq:applyorthog}
+  \int_{t_0}^{t_0+T}\cos\left(\frac{2\pi s}{T}t\right)g(t)\,\infd t = \\ 
+  \int_{t_0}^{t_0+T}\cos\left(\frac{2\pi s}{T}t\right)\left\{
+    a_0 + \sum_{r=1}^\infty
+    \left[a_r\cos\left(\frac{2\pi r}{T}t\right) +
+      b_r\sin\left(\frac{2\pi r}{T}t\right)\right] \right\}\,\infd t
+\end{multline}
+Now focus on the right-hand side of \autoref{eq:applyorthog}. We can
+bring the integral into the summation and write the RHS as
+\begin{align}
+  &a_0\int_{t_0}^{t_0+T}\cos\left(\frac{2\pi s}{T}t\right)\,\infd t\,+ &
+  &\text{[term 1]} \nonumber\\
+   &\sum_{r=1}^\infty\left[a_r\int_{t_0}^{t_0+T}\cos\left(\frac{2\pi
+        s}{T}t\right)\cos\left(\frac{2\pi r}{T}t\right)\,\infd
+    t\right] + & &\text{[term 2]}\nonumber\\
+    &\sum_{r=1}^\infty\left[b_r\int_{t_0}^{t_0+T}\cos\left(\frac{2\pi s}{T}t\right)
+    \sin\left(\frac{2\pi r}{T}t\right)\,\infd t \right]. & &\text{[term
+    3]} \nonumber
+\end{align}
+First consider [term 1]: integrating cosine over a full period (or $s$
+full periods) gives zero by inspection.  Now [term 3]: orthogonality
+condition \autoref{eq:orthogcond}a clearly applies, so this term is
+also zero.  Finally, consider [term 2]: this matches with
+orthogonality condition \autoref{eq:orthogcond}b; this term is only
+non-zero if $r=s$.  This means that all terms with $r\ne s$ in the
+summation are zero!  We can therefore discard the summation!
+
+Using these three simplifications, we can rewrite
+\autoref{eq:applyorthog} as
+\begin{equation}
+  \label{eq:cosinecoef}
+  a_s\frac{T}{2} = \int_{t_0}^{t_0+T}\cos\left(\frac{2\pi s}{T}t 
+  \right)g(t)\,\infd t,
+\end{equation}
+which is a formula for calculating cosine coefficient, $a_s$.  We can
+apply a similar method (multiply eqn.~\eqref{eq:fourierseries} by
+$\sin(2\pi s t/T)$ and integrate over one period) to obtain the sine
+coefficients $b_s$.
+
+\subsection{Calculating the Fourier coefficients} 
+In the previous section, we used the orthogonality conditions to
+derive the following formulae for the coefficients
+\begin{subequations}
+  \label{eq:coefrecipe}
+  \begin{align}
+    a_r &= \frac{2}{T}\int_{t_0}^{t_0+T}g(t)
+      \cos\left(\frac{2\pi r}{T}t\right)\,\infd t, \\
+    b_r &= \frac{2}{T}\int_{t_0}^{t_0+T}g(t)
+      \sin\left(\frac{2\pi r}{T}t\right)\,\infd t.
+  \end{align}
+\end{subequations}
+(These formulae are examinable).
+
+\autoref{eq:coefrecipe} can be used blindly to compute the
+coefficients of a Fourier series, but as usual, a bit of care will
+save us work.  This comes from noting that $\sin$ is an \textit{odd
+  function} while $\cos$ is an \textit{even function}:
+\begin{align}
+  \sin(-x) &= -\sin(x), & &\text{therefore odd},\nonumber\\
+  \cos(-x) &= \cos(x),  & &\text{therefore even}.\nonumber
+\end{align}
+
+If the function $g(t)$ is odd, then we can infer that all $a_r$ must
+equal zero, since these are the coefficients of $\cos$ terms, which
+are even (and therefore couldn't contribute to an odd function).  If
+$g(t)$ is even, then all $b_r$ must equal zero.
+
+\paragraph{A recipe for calculating the Fourier series of a periodic
+  function}
+\begin{enumerate}
+\item Determine the period $T$ of the function. Choose a starting
+  point $t_0$, usually the beginning of a period of oscillation.
+\item Calculate the mean of the function over one period, and assign
+  this value to $a_0$.
+\item Ascertain whether the function is even, odd, or neither.
+\item Use \autoref{eq:coefrecipe} to calculate the required
+  coefficients depending on your result from the previous step.
+\item Assemble the coefficients with their respective sine and cosine
+  functions and frequencies, and write down the resulting Fourier
+  series. 
+\item Check your result!
+\end{enumerate}
+
+\subsection{A worked example}
+
+Let's calculate a Fourier series of the square wave from
+\autoref{fig:sqwave} and \autoref{eq:squarewave}.
+\begin{enumerate}
+\item By construction, the period of the function is $T$.  Let's
+  choose $t_0=-T/2$ because it is the beginning of a cycle.
+\item By inspection of \autoref{fig:sqwave}, we can see that the mean
+  of this function is zero, and hence $a_0=0$.
+\item By inspection of \autoref{fig:sqwave}, we can see that the
+  function is odd.  We can therefore take $a_r=0$ for all $r>0$.
+\item We now use \autoref{eq:coefrecipe} to determine $b_r$:
+  \begin{align}
+    b_r &= \frac{2}{T}\int_{-T/2}^{T/2}g(t)\sin\left(\frac{2\pi
+        r}{T}t\right)\,\infd t && \text{by using \autoref{eq:coefrecipe}b}\nonumber\\
+    &= \frac{2}{T}\left[\int_{-T/2}^{0}(-1)\sin\left(\frac{2\pi
+        r}{T}t\right)\,\infd t + \int_{0}^{T/2}(1)\sin\left(\frac{2\pi
+        r}{T}t\right)\,\infd t\right] && \text{split the integral into
+                                         two parts}\nonumber\\
+    &= \frac{4}{T}\int_{0}^{T/2}g(t)\sin\left(\frac{2\pi
+        r}{T}t\right)\,\infd t&& \text{by exploiting symmetry about $t=0$}\nonumber\\
+    &= \frac{4}{T}\int_{0}^{T/2}\sin\left(\frac{2\pi
+        r}{T}t\right)\,\infd t&& \text{by substituting for $g(t)$}\nonumber\\
+    &= -\frac{4}{T}\left(\frac{T}{2\pi r}\right)\left[\cos\left(\frac{2\pi
+          r}{T}t\right)\right]_{0}^{T/2}&& \text{by integration}\nonumber\\
+    &= -\frac{2}{\pi r}[\cos(\pi r) - \cos(0)] = \frac{2}{\pi r}[1 -
+    (-1)^r] && \text{by algebra}\nonumber\\
+    &=
+    \begin{cases}
+      \frac{4}{\pi r} & \text{ for $r$ odd},\\
+      0 & \text{for $r$ even}.
+    \end{cases}&& \text{by splitting into cases}\nonumber
+  \end{align}
+\item Hence we can assemble the Fourier series as 
+  \begin{displaymath}
+    g(t) = \frac{4}{\pi}\left[\sin(\omega t) + \frac{\sin(3\omega
+        t)}{3} + \frac{\sin(5\omega t)}{5} + ...\right],
+  \end{displaymath}
+  where $\omega = 2\pi/T$ is the angular frequency.
+\item To check our work we plot the solution in 
+  \autoref{fig:sqwaveFS}.
+\end{enumerate}
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=4.5in]{../figs/L14/FourierSeriesConvergence}
+  \caption{The convergence of a Fourier series expansion of a
+    square-wave function, including \textbf{(a)} one term ($r=1)$,
+    \textbf{(b)} two terms ($r=1,3$), \textbf{(c)} three terms
+    ($r=1,3,5$), \textbf{(d)} twenty terms ($r=1,3,5,7,...,39$).}
+  \label{fig:sqwaveFS}
+\end{figure}
+
+\subsection{Fourier series of discontinuous functions}
+
+While it is possible to find the Fourier series of discontinuous
+functions (we did so in the example above), the series will always
+``overshoot'' the function at the discontinuities.  Such overshoot is
+evident in \autoref{fig:sqwaveFS}.  It is called the \textit{Gibb's
+  phenomenon}, and it does not disappear no matter how many terms we
+of the series that we sum. For functions without discontinuities the
+Fourier series generally does not have any problems.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Discrete Fourier Series and Power Spectra I}
+\label{sec:dft1}
+
+\paragraph{In this section} We learn about how the same concepts that
+were used to develop the Fourier series can be applied to the analysis
+of time-series data.  We'll also learn how the resulting series can be
+converted into a \textit{spectrum}, a useful plot that can give
+fundamental information about the processes that are reflected in the
+time-series.
+
+\subsection{From time-series to radian-series}
+
+\DA{pp. 268--272} Let's consider a time-series $\bv{y}$ consisting of
+$N$ observations, with an equal spacing in time $\Delta t$, starting
+from time zero (if our time-series were not equally spaced, we could
+use interpolation to obtain an equally spaced series that represents
+the data). Our goal is to somehow apply to this time-series a
+\textit{Fourier analysis} like what we saw in the last lecture.
+
+We can represent the time-series as
+\begin{align}
+  \bv{y} &= y_0,\,y_1,\,y_2,\,y_3,\,...\,y_{N-1},\nonumber\\
+  \bv{t} &= t_0,\,t_1,\,t_2,\,t_3,\,...\,t_{N-1}.\nonumber
+\end{align}
+Furthermore, since we wish to apply Fourier analysis, we must make a
+\textit{periodic extension} of the series, to turn it into a periodic
+function of time that extends from $-\infty$ to $+\infty$ (analogous
+to our periodic functions from the last lecture).  This means that
+stepping past the end of our time-series should take us back to the
+beginning; we have wrapped the time-series around a circle, as shown
+in \autoref{fig:circleseries}.
+
+\begin{SCfigure}[1][bh]
+  \centering
+  \includegraphics[height=2.5in]{../figs/L15/CircularTimeseries}
+  \caption{A time-series with $N=9$ entries wrapped around a circle,
+    making it periodic. Each time $t_j$ corresponds to a angle
+    $\theta_j$. \vspace{1cm}}
+  \label{fig:circleseries}
+\end{SCfigure}
+
+The time-series shown in \autoref{fig:circleseries} has $N=9$
+entries. The total time to complete the trip around the circle and
+arrive back at the initial point is period $T=N\Delta t$. This
+motivates us to convert the time-series into \textit{radians} as
+follows
+\begin{displaymath}
+  \theta_j = \frac{2\pi t_j}{T}.
+\end{displaymath}
+Since our entries are regularly spaced in time, we can substitute $t_j
+= j\Delta t$, as well as our definition for the period $T$ to obtain
+\begin{equation}
+  \label{eq:radvar}
+  \theta_j = \frac{2\pi j}{N}
+\end{equation}
+and we can rewrite our time-series as 
+\begin{align}
+  \bv{y} &= y_0,\,y_1,\,y_2,\,y_3,\,...\,y_{N-1},\nonumber\\
+  \boldsymbol{\theta} &= \theta_0,\,\theta_1,\,\theta_2,\,
+  \theta_3,\,...\,\theta_{N-1}.\nonumber
+\end{align}
+Here we have replaced the time-coordinate of our series with a
+corresponding angle in radians, such that the series becomes periodic.
+By construction $\theta_0=0$ and $\theta_N=2\pi$.  This makes it
+amenable to Fourier analysis.
+
+\subsection{Discrete Fourier series}
+
+We now posit a new type of Fourier series that decomposes a
+\textit{discrete} rather than continuous signal.  Instead of a
+periodic function, we're going to analyse a series of discrete
+points in a time-series.  Similar to \autoref{eq:fourierseries}, we
+use the equation
+\begin{equation}
+  \label{eq:discretefourier_1}
+  \bv{y} = \sum_k[\alpha_k\cos(k\boldsymbol{\theta}) + 
+  \beta_k\sin(k\boldsymbol{\theta})]
+\end{equation}
+to represent the discrete Fourier series. As before, $\alpha_k$ and
+$\beta_k$ are unknown coefficients, and $k$ is an integer, called the
+\textit{harmonic number}. For $k=0$, the sine term drops out and the
+cosine term becomes a constant $\alpha_0$; this is the mean of the
+time-series.  We can substitute our discrete values of $\theta$ from
+\autoref{eq:radvar} to obtain
+\begin{equation}
+  \label{eq:discretefourier_2}
+  y_j = \sum_k\left[\alpha_k\cos\left(\frac{2\pi k}{N}j\right) + 
+    \beta_k\sin\left(\frac{2\pi k}{N}j\right)\right].
+\end{equation}
+Here the integer index $j$ has replaced time $t$ as the independent
+variable. The angular frequency $2\pi k/N$ has replaced $\omega$.
+
+For the series represented by \autoref{eq:discretefourier_2}, there
+are always an odd number of unknown coefficients.  This can be seen by
+considering that the unknown coefficients of the series come in pairs
+$(\alpha_k,\beta_k)$ except for at $k=0$, where there is only one
+coefficient, $\alpha_0$.  To solve for the unknown coefficients, we
+must have an equal number of data points in our time-series;
+\textit{hence $N$ must be odd}\footnote{A modified version of
+  \autoref{eq:discretefourier_2} can be used to compute the discrete
+  Fourier series of a time-series with $N$ even.  We will not consider
+  that modification here.}.  We can accommodate this by interpolation,
+or by simply dropping the last entry before analysing the series.
+
+The sine and cosine oscillations with $k=1$ represent the longest
+period that we can resolve in our analysis of the time-series.  In
+fact, they represent the oscillations with discrete period $N$, which
+correspond to period $T$.
+
+At larger harmonic number $k$, the frequency of the corresponding
+oscillation grows (in other words, the period shrinks).  What is the
+largest frequency (smallest period) that can be resolved?
+Equivalently, what is the maximum harmonic number $k$ in the summation
+in \autoref{eq:discretefourier_2}? Think back to what you learned
+about \textit{aliasing} in problem 4 of Laboratory 5 from this term:
+to represent an oscillation, you need to \textit{sample it at least
+  twice per period}.  This means that for a given sampling rate
+$\Delta t$, the smallest period that you can hope to capture is the
+one with a $T_\text{min}=2\Delta t$, corresponding to a harmonic
+number $k_\text{max}=N/2$.  This value of $k$ is known as the
+\textit{Nyquist frequency}; it is the largest frequency that we can
+resolve in a time-series. In practise, for $N$ odd, the best we can do
+is $T_\text{min}=2\Delta t N/(N-1)$ or
+\begin{displaymath}
+  k_\text{max} = \frac{N-1}{2}.
+\end{displaymath} 
+Using these limits on $k$, we can rewrite
+\autoref{eq:discretefourier_2} as
+\begin{equation}
+  \label{eq:discretefourier}
+  y_j = \alpha_0 + \sum_{k=1}^{\frac{N-1}{2}}\left[ 
+    \alpha_k\cos\left(\frac{2\pi k}{N}j\right) + 
+    \beta_k\sin\left(\frac{2\pi k}{N}j\right)\right], 
+\end{equation}
+for $j$ going from 0 to $N-1$.
+
+\subsection{Determining the coefficients of the Discrete Fourier series}
+
+To make \autoref{eq:discretefourier} useful, we need to solve for the
+coefficients $\alpha_k$ and $\beta_k$.  This can be done in a way that
+is analogous to our approach from the previous lecture on continuous
+Fourier series, except that we replace integration with matrix
+multiplication. 
+
+The first step is to rewrite \autoref{eq:discretefourier} in
+matrix--vector notation.  We already know that $\bv{y}$ is a vector
+composed of its entries
+\begin{equation}
+  \label{eq:yvec}
+  \bv{y} = [y_0,\,y_1,\,...\,y_{N-1}]'
+\end{equation}
+where the $'$ symbol indicates to take the transpose (giving a column
+vector).  Each of our sine and cosine oscillations is also a vector,
+and can be written in the same way, for a single value of $k$,
+\begin{subequations}
+  \label{eq:sinevec}
+  \begin{align}
+    \bv{C}_k &= \left[\cos\left(\frac{2\pi k}{N}0\right),\,
+      \cos\left(\frac{2\pi
+          k}{N}1\right),\, ... \,\cos\left(\frac{2\pi k}{N}(N-1)\right)\right]',\\
+    \bv{S}_k &= \left[\sin\left(\frac{2\pi k}{N}0\right),\,
+      \sin\left(\frac{2\pi k}{N}1\right),\, ... \,\sin\left(\frac{2\pi
+          k}{N}(N-1)\right)\right]'.
+  \end{align}
+\end{subequations}
+We can combine these two vectors into a $N\times2$ (read: $N$ rows by
+2 columns) matrix,
+\begin{equation}
+  \label{eq:matrix}
+  \bv{Z}_k = [\bv{C}_k,\,\bv{S}_k].
+\end{equation}
+There are $(N-1)/2$ of these $Z_k$ matrices: one for each value of
+$k$. There is also one pair of coefficients, $\alpha_k$ and $\beta_k$
+for each value of $k$.  These become a two-component column vector:
+\begin{equation}
+  \label{eq:coefvec}
+  \bv{G}_k = [\alpha_k,\,\beta_k]'.
+\end{equation}
+
+We can combine \autoref{eq:yvec}, \autoref{eq:matrix}, and
+\autoref{eq:coefvec} to rewrite \autoref{eq:discretefourier} as
+follows:
+\begin{equation}
+  \label{eq:discretefourier_m}
+  \bv{y} = \alpha_0 + \sum_{k=1}^{\frac{N-1}{2}}\bv{Z}_k\bv{G}_k,
+\end{equation}
+or, equivalently,
+\begin{equation}
+  \label{eq:discretefourier_mx}
+  \left[\begin{array}{c}
+      y_0\\y_1\\\vdots\\y_{N-1}
+    \end{array}\right] = 
+  \left[\begin{array}{c}
+      \alpha_0\\\alpha_0\\\vdots\\\alpha_0
+    \end{array}\right] + \sum_{k=1}^{\frac{N-1}{2}}
+  \left[\begin{array}{cc}
+    \cos\left(\frac{2\pi k}{N}0\right) & \sin\left(\frac{2\pi
+        k}{N}0\right)\\
+      \cos\left(\frac{2\pi
+          k}{N}1\right) & \sin\left(\frac{2\pi k}{N}1\right)\\ \vdots
+      & \vdots \\ 
+      \cos\left(\frac{2\pi k}{N}(N-1)\right) & \sin\left(\frac{2\pi 
+          k}{N}(N-1)\right)
+    \end{array}\right]
+  \left[\begin{array}{c}
+      \alpha_k\\\beta_k
+    \end{array}\right].
+\end{equation}
+
+The second step is to recognise the orthogonality condition:
+\begin{align}
+  \frac{2}{N}\,\bv{C}_k \cdot \bv{S}_l &=0 \;\;\;\;\text{for all $k$ and $l$} \nonumber\\
+  \frac{2}{N}\,\bv{C}_k \cdot \bv{C}_l &=
+  \begin{cases}
+    1 & \text{for $k=l$},\\
+    0 & \text{for $k\ne l$},
+  \end{cases} \nonumber\\
+  \frac{2}{N}\,\bv{S}_k \cdot \bv{S}_l &=
+  \begin{cases}
+    1 & \text{for $k=l$},\\
+    0 & \text{for $k\ne l$},
+  \end{cases}\nonumber
+\end{align}
+Or, more usefully, 
+\begin{equation}
+  \label{eq:matorthog}
+  \frac{2}{N}\,\bv{Z}_k'\,\bv{Z}_l =
+  \begin{cases}
+    \left[\begin{array}{cc} 1 & 0 \\ 0 & 1\end{array}\right]=\bv{I} &
+    \text{for $k=l$},\\[5mm]
+    \left[\begin{array}{cc} 0 & 0 \\ 0 & 0\end{array}\right] &
+    \text{for $k\ne l$}.
+  \end{cases}
+\end{equation}
+This means that each of the $\bv{Z}_k$ is orthogonal to all of the
+others; hence each coefficient codes for a unique contribution that is
+independent of all the other contributions.
+
+We can now use \autoref{eq:matorthog} to isolate and solve for our
+coefficients by multiplying the whole equation by 
+$\frac{2}{N}\bv{Z}_l'$
+\begin{align}
+  \frac{2}{N}\bv{Z}_l'\,(\bv{y}-\alpha_0) &=
+  \frac{2}{N}\bv{Z}_l'\sum_{k=1}^{\frac{N-1}{2}}\bv{Z}_k\bv{G}_k,\nonumber\\
+  &=\sum_{k=1}^{\frac{N-1}{2}}\left(\frac{2}{N}\bv{Z}_l'\,\bv{Z}_k\right)
+  \bv{G}_k,\nonumber\\
+  &= \bv{I}\bv{G}_l = \bv{G}_l.\nonumber
+\end{align}
+And so we have derived an equation for each pair of coefficients,
+\begin{equation}
+  \label{eq:coefpair}
+  \left[\begin{array}{c}
+      \alpha_l \\ \beta_l
+    \end{array}\right] = \frac{2}{N}\bv{Z}_l'\,(\bv{y}-\alpha_0).
+\end{equation}
+With this equation, we can compute the values of the coefficients, and
+hence fully determine the discrete Fourier series.  
+
+\subsection{Putting it together to compute the discrete Fourier series}
+
+The following \Mlab function implements the calculation in
+\autoref{eq:coefpair}.  (Note that it uses a data structure \texttt{F}
+to return the result; a data structure is simply a bundle of
+variables).
+
+\verbatiminput{../figs/L15/dfs.m}
+
+You can download this function, called \texttt{dfs.m}, from 
+\url{http://www.earth.ox.ac.uk/~richardk/teaching/SYM/}.
+
+Try using it on synthetic time-series.  For example, try
+\Minput{t = linspace(0,2*pi,1002);}
+\Minput{y = 2*cos(3*t) + 3*sin(t);}
+\Minput{y = y(1:end-1); \% shorten to an odd number of points}
+\Minput{F = dfs(y);}\\
+Now guess which values of $\alpha_k$ and $\beta_k$ are non-zero. You
+can check your guess by entering
+\Minput{semilogx(F.alpha,'-or'); hold on;}
+\Minput{semilogx(F.beta,'-xb'); hold off;}\\
+The function \texttt{semilogx} makes a plot with a logarithmic
+$x$-scale (which spreads out the first few values and makes
+them easier to identify). 
+
+\question Given the result \texttt{F} from the function \texttt{dfs},
+reconstruct the time-series values and find the mean difference
+between the original time-series and the reconstructed one.
+
+\subsection{The variance spectrum}
+
+The frequency of the oscillators in the discrete Fourier series
+depends on the integer $k$. For the same value of $k$, both the sine
+and cosine terms have the same frequency.  Having both sine and cosine
+allows us to resolve the phase of the original signal.  In many cases
+however, we're only interested in the \textit{spectrum} of the
+time-series: what amount of variance comes from each frequency? This
+is given by
+\begin{displaymath}
+  \sigma_k^2 = \frac{\alpha_k^2+\beta_k^2}{2}.
+\end{displaymath}
+This can be normalised by the total variance of the time-series as 
+\begin{equation}
+  \label{eq:varnormed}
+  \overline{\sigma}_k^2 = \frac{\alpha_k^2+\beta_k^2}{2\sigma^2},
+\end{equation}
+where $\sigma^2$ is the variance of the time-series $\bv{y}$.  In
+electrical engineering, the power of an electrical signal is
+proportional to its variance, so $\sigma_k^2$ is often called the
+\textit{power}, and a plot of its values is called a \textit{power
+  spectrum}\footnote{This is a plot with many names.  It is sometimes
+  called a periodogram, or a variogram.}.  The variance or power
+spectrum is an extremely important tool in the observational sciences!
+
+Note that in the last line of the function \texttt{dfs}, the power
+spectrum is calculated according to \autoref{eq:varnormed}. 
+
+\subsection{Worked examples}
+
+Let's first consider an example with a synthetic time-series with
+known frequency content.  First we construct the synthetic
+time-series:
+\Minput{T = 10;~~~~\% total duration, years}
+\Minput{A1 = 33;~~~\% watts}
+\Minput{A2 = 75;~~~\% watts}
+\Minput{f1 = 4/T;~~\% 1/years}
+\Minput{f2 = 13/T;~\% 1/years}
+\Minput{t = linspace(0,T,2002);}
+\Minput{y = A1*sin(2*pi*f1*t) + A2*sin(2*pi*f2*t);}
+\Minput{plot(t,y,'-k');}
+\Minput{xlabel('Time, years'); ylabel('Watts');}
+
+\begin{figure}[bt]
+  \centering
+  \includegraphics[width=5in]{../figs/L15/SeriesAndSpectrum_1}
+  \caption{\textbf{(a)} Synthetic time-series and \textbf{(b)}
+    normalised variance (power) spectrum.}
+  \label{fig:synthseries}
+\end{figure}
+
+Now we analyse the time-series, noting that we should first strip off
+the last data-point so that our series is periodic and has an odd number
+of entries:
+\Minput{y = y(1:end-1);}
+\Minput{F = dfs(y);}
+
+Lastly, we produce our variance spectrum, calculating the frequency
+values that go on the $x$-axis:
+\Minput{N = length(y);}
+\Minput{k = 1:(N-1)/2;}
+\Minput{freq = k/T;}
+\Minput{plot(freq(1:16),F.power(1:16),'-ok'); \% Just plot first 16}
+\Minput{xlabel('Frequency, 1/year'); ylabel('Normalised variance');}
+
+A plot of the time-series and frequency spectrum are shown in
+\autoref{fig:synthseries}.
+
+\begin{figure}[bt]
+  \centering
+  \includegraphics[width=5in]{../figs/L15/SeriesAndSpectrum_2}
+  \caption{\textbf{(a)} Observed runoff at Cave Creek, and
+    \textbf{(b)} normalised variance (power) spectrum. The shortest
+    period, the 12-month, and the longest period oscillations are
+    labelled. }
+  \label{fig:runoffseries}
+\end{figure}
+
+As a second example, let's work with some real data: an 18-year record
+of total monthly runoff of Cave Creek, in Kentucky,
+France\footnote{Actually, there are 18 years plus 1 month of data in
+  this series.  Why the extra month? Download the data from
+  \url{http://www.earth.ox.ac.uk/~richardk/teaching/SYM/CaveCreekData.txt}}.
+The data are given in hundredths of an inch.
+\autoref{fig:runoffseries}a is a plot of the time-series.  Over the 18
+years of recordings, there are about 18 peaks; this suggests that the
+runoff peak occurs annually, which makes sense.  Let's analyse the
+data.
+
+Assuming that the data has been loaded and the time-series vector is
+called \texttt{runoff},
+\Minput{N = length(runoff);~\% check that N is odd!}
+\Minput{F = dfs(runoff);}
+\Minput{T = 18*12+1;~~~~~~~~\% total duration, months}
+\Minput{k = 1:(N-1)/2;~~~~~~\% harmonic number}
+\Minput{per = T./k;~~~~~~~~~\% periods}
+\Minput{semilogx(per,F.power,'-ok','LineWidth',1.5,'MarkerSize',5);}
+\Minput{xlabel('Period, months'); ylabel('Normalised variance');}\\[1mm]
+The resulting plot is shown in \autoref{fig:runoffseries}b.  Note that
+in this case, we have plotted the normalised variance against the
+\textit{period} of oscillation, rather than the frequency.  This
+sometimes makes the graph easier to understand.  Just as we
+anticipated, most of the power in the signal is in the 12-month
+oscillation. 
+
+\subsection{What is a spectrum?}
+
+In trying to get a feeling for the meaning of a spectrum, it is
+helpful to consider what happens to visible light as it goes through a
+prism. \autoref{fig:prism} shows electromagnetic waves of white light
+incident on a prism from the right.  The prism bends different
+frequencies of electromagnetic oscillations to different extents, and
+hence separates the white light into its components.  The intensity of
+each band of colour in the spectrum corresponds to the contribution of
+that frequency to the white light.  This is a good analogy for the
+variance or power spectrum: a plot of the contribution to the total
+signal as a function of frequency (or period, or harmonic number,
+etc).
+
+\begin{SCfigure}[1][bh]
+  \centering
+  \includegraphics[width=4in]{../figs/L16/FourierPrism}
+  \caption{(Fig.~4.75 from \textbf{DA}). A prism acts as a frequency
+    analyser, transforming the incident white light (time or spatial
+    view) into its constituent spectrum of colours (frequency
+    view). The intensity of each colour in the frequency view is
+    analogous to the amplitude in a variance (power) spectrum.
+    \vspace{5mm}}
+  \label{fig:prism}
+\end{SCfigure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Discrete Fourier Series and Spectra II}
+\label{sec:intro_timeseries}
+
+\paragraph{In this section} we'll encounter a special consideration
+when calculating the discrete Fourier series for time-series data that
+have a long-term trend. We'll then introduce the concept of a Fourier
+transform and learn about the built-in functionality of \Mlab for
+Fourier analysis.
+
+\subsection{Detrending} 
+
+So far, we've applied Fourier analysis to
+time-series that are \textit{stationary}: they have a mean that is
+roughly constant with time, if one averages over the observed
+oscillations. This is not true of all time-series.  Some have a
+\textit{trend}, as well as periodic and random components.  Let's
+consider an example of a synthetic time-series.
+\Minput{T = 100;  \% years}
+\Minput{N = 1001; \% data points}
+\Minput{t = linspace(0,T,N+1);}
+\Minput{y = 2*cos(2*pi*t*5/T)+sin(2*pi*t*12/T)+8*t/T+0.4*randn(size(t));}\\[1mm]
+Our time-series \texttt{y}, shown in \autoref{fig:trendseries}a, 
+has four components:
+\begin{enumerate}
+\item \texttt{2*cos(2*pi*t*5/T)} is a cosine component with amplitude 2 and
+  period \texttt{T/5} = 20 years.  We therefore expect $\alpha_5=2$.
+\item \texttt{sin(2*pi*t*12/T)} is a sine component with unit amplitude
+  and period \texttt{100/12}. We expect $\beta_{12}=1$.
+\item \texttt{8*t/T} is the trend in the dataset.  The time-series has
+  a mean slope of \texttt{8/100}.
+\item \texttt{0.4*randn(size(t))} is a normally-distributed random
+  (noise) component with amplitude 0.4 (see \texttt{help randn} for
+  details). 
+\end{enumerate}
+
+\begin{SCfigure}[1][tb]
+  \centering
+  \includegraphics[width=4.5in]{../figs/L16/TimeSerWithTrend}
+  \caption{\textbf{(a)} Synthetic time-series with two periodic
+    components, a trend, and a random component. \textbf{(b)}
+    Amplitude spectrum from the discrete Fourier series of the raw
+    time-series, showing $\alpha_k$ (circles) and $\beta_k$,
+    (crosses). Harmonic numbers 5 and 12 are marked with vertical
+    dotted lines. \textbf{(c)} Amplitude spectrum of the detrended
+    time-series.\vspace{1cm}}
+  \label{fig:trendseries}
+\end{SCfigure}
+
+We then calculate and plot the discrete Fourier series,
+\Minput{F = dfs(y(1:end-1));}
+\Minput{k = [1:(N-1)/2];}
+\Minput{semilogx(k,F.alpha,'-ok'); hold on;}
+\Minput{semilogx(k,F.beta,'-xk');}
+\Minput{plot([5 5],[-3 3],':k',[12 12],[-3 3],':k'); hold off;}
+\Minput{xlabel('Harmonic number'); ylabel('Coef.~amplitude');}\\[1mm]
+This amplitude spectrum is shown in \autoref{fig:trendseries}b. Note
+that the values of of $\alpha_k$ are as expected: close to zero with a
+spike at $k=5$ to about 2 (the random noise causes slight variations
+from zero).  The values of $\beta_k$ are not as expected, however.
+Although we see the expected spike at $k=12$, the values are below
+zero for smaller values of $k$.  This downward curve is a consequence
+of the trend in the time-series; \textit{remember that to compute the
+  discrete Fourier series, we assumed that the time-series is
+  periodic}.  The trend pollutes the Fourier coefficients with
+deviations from zero that are unrelated to oscillations in the Fourier
+series. To avoid this problem, it is often necessary to
+\textit{detrend} a time-series before analysing.  This means
+determining the linear (or non-linear) trend of the data-series and
+subtracting it from the raw data.
+
+Let's detrend the data and try the Fourier analysis again.  In this
+case, we know the linear trend in the data, so we can subtract it off
+directly; normally, if you had a measured time-series, you'd need to
+regress the series to find the best-fitting trend, and then subtract
+that trend off.
+\Minput{ydt = y - 8/T*t;}
+\Minput{Fdt = dfs(ydt(1:end-1));}
+\Minput{semilogx(k,Fdt.alpha,'-ok'); hold on;}
+\Minput{semilogx(k,Fdt.beta,'-xk');}\\[1mm]
+A plot of the coefficients of the discrete Fourier series of the
+detrended time-series is shown in \autoref{fig:trendseries}c. Note
+that the spurious depression of the sine coefficients has been
+eliminated. 
+
+\subsubsection{Removing nonlinear trends}
+
+\begin{SCfigure}[1][hb]
+  \centering
+  \includegraphics[width=4.5in]{../figs/L16/QuadDetrend}
+  \caption{A synthetic time-series with a nonlinear trend.  Note that
+    the dotted line, which is the best fit for a first order
+    polynomial, is a still a poor fit to the trend in the data, while
+    the second order (quadratic) polynomial captures the trend
+    well. \vspace{0.1cm}}
+  \label{fig:quad}
+\end{SCfigure}
+
+Trends in time-series are not always linear.  Sometimes they have
+obvious curvature, which cannot be accommodated by a best fitting
+straight line.  Let's consider another synthetic time-series as an
+example, as shown in \autoref{fig:quad}.  In this figure, the
+best-fitting straight line clearly does not fit the data. However, the
+best-fitting quadratic polynomial fits the data very well.  Both of
+these lines were calculated using the \Mlab built-in function
+\texttt{polyfit}. Here's how it works (assuming that we have a vector of
+times \texttt{t} and a vector of data \texttt{y}, both of the same length):
+\Minput{p = polyfit(t,y,1)}\\
+where \texttt{1} indicates that we want to use a polynomial of
+degree one, i.e.~$y=p_1t + p_2$, where $p_1$ and $p_2$ are constants
+to be determined by \Mlab.  This function returns
+\begin{verbatim}
+      p = 
+           -0.1359    3.0590
+\end{verbatim}
+which are the constants $p_1$ and $p_2$ of our linear (degree one)
+polynomial.  We can use the same function to obtain the coefficients
+of a best-fitting quadratic polynomial,
+\begin{verbatim}
+      >> q = polyfit(t,y,2)
+
+      q =
+           -0.0022    0.0840   -0.6033
+\end{verbatim}
+\Mlab computes the coefficients of these polynomials using a linear
+least squared error algorithm, that is very similar to what you
+studied at the end of last term.  It is very easy to make a plot like
+the one in \autoref{fig:quad}:
+\Minput{plot(t, y, '-k'); hold on;}
+\Minput{plot(t, p(1)*t + p(2), ':k');}
+\Minput{plot(t, q(1)*t.\^{}2 + q(2)*t + q(3), '--k'); hold off;}\\
+Wonderful!  We could easily plot a detrended version of the data by saying
+\Minput{plot(t, y - (q(1)*t.\^{}2 + q(2)*t + q(3)), '-k');}
+
+What order of polynomial should you use?  The higher the order, the
+closer the fit to the time-series.  But higher order polynomials also
+have more ``wiggles,'' and it is exactly these wiggles that spectral
+analysis seeks to quantify.  So a good policy is to use lowest order
+polynomial that effectively captures the trend without capturing the
+wiggles that you are interested in.  This is somewhat subjective!
+
+\subsection{The Fourier transform and its discrete version}
+
+Fourier transforms are closely related to Fourier series, but take a
+mathematical approach that is more complicated in order to achieve
+greater generality of usage. For example, Fourier transforms can be
+used on non-periodic functions.  You can think of a non-periodic
+function as a periodic function where the period has gone to
+infinity.  In this limit, the summation over frequencies that appears
+in \autoref{eq:fourierseries} becomes an integral, and we have
+\begin{subequations}
+  \label{eq:fouriertransform}
+  \begin{align}
+    \label{eq:reverseft}
+    {f}(t) &=
+    \frac{1}{2\pi}\int_{-\infty}^{+\infty}\text{e}^{i\omega
+      t}{F}(\omega)\,\infd \omega,\\
+    \label{eq:forwardft}
+    {F}(\omega) &= \;\;\;\;\;\;\int_{-\infty}^{+\infty}\text{e}^{-i\omega
+      t}{f}(t)\,\infd t, 
+  \end{align}
+\end{subequations}
+where $F(\omega)$ is the Fourier transform of the function
+$f(t)$. \autoref{eq:reverseft} reconstructs the function in the
+time-domain from its Fourier transform, and hence corresponds with
+\autoref{eq:fourierseries}, while \autoref{eq:forwardft} corresponds
+to recipe for calculating the Fourier series coefficients,
+\autoref{eq:coefrecipe}.
+
+The mathematics of the Fourier transform is beyond the scope of this
+course, but we can make a couple of remarks about
+\autoref{eq:fouriertransform}.
+\begin{itemize}
+\item The Fourier transform replaces the integer harmonic number $k$
+  with a continuous angular frequency $\omega$.
+\item It replaces the pair of coefficients $\alpha_k$ and $\beta_k$
+  with a complex function $F$. Recalling Euler's formula
+  \begin{displaymath}
+    \text{e}^{i\theta} = \cos\theta + i\sin\theta,
+  \end{displaymath}
+  we can see that the real part of $F$ corresponds to the coefficients
+  of the cosine terms $\alpha$, while the imaginary part of $F$
+  corresponds to the coefficients of the sine terms $\beta$.
+\end{itemize}
+Like the Fourier series, the Fourier transform can be applied to
+analytical functions, not to time-series data.  To analyse discrete
+time-series data, we need the discrete version of the Fourier series.
+
+The discrete Fourier transform is the method of spectral analysis that
+is preferred by most scientists, and it is the method that is built
+into \Mlab.  It is therefore a goal of this course to make it familiar
+to you on a practical level.
+
+Suppose that you have a time-series $\bv{y}$ composed of $N$
+observations, equally spaced in time and covering a total time $T$. To
+analyse this we use a discrete version of \autoref{eq:forwardft}, we
+convert the integral back into a sum to give
+\begin{equation}
+  \label{eq:discretefouriertrans}
+  Y_k = \sum_{n=1}^N y_n\,\exp\left[-2\pi i
+    (k-1)\frac{n-1}{N}\right],\;\;\;\; 1\le k \le N,
+\end{equation}
+where $n$ is an index of the observations in the time-series and $k$
+is the integer harmonic number.  $Y_k$ are the entries in a vector of
+complex numbers, where
+\begin{align}
+  \alpha_k &= \text{Real}(Y_k), \\
+  \beta_k &= -\text{Imag}(Y_k).
+\end{align}
+You may wonder why $k$ goes from 1 to $N$ in
+\autoref{eq:discretefouriertrans}, whereas in the discrete Fourier series
+it went from 1 to the Nyquist frequency at $(N-1)/2$.  The harmonics
+for $k$ greater than the Nyquist frequency are \textit{image
+  frequencies}, and are actually duplicates of the regular set.  For
+technical reasons, it is easier to compute this complete series and
+discard the image frequencies; this is what \Mlab does.
+
+\subsection{Using \Mlab's \texttt{fft} function}
+
+It should come as no surprise that \Mlab has a built-in function to do
+spectral analysis.  This function is called \texttt{fft}, which is an
+abbreviation of ``Fast Fourier transform''. \texttt{fft} is a rather
+complicated tool.  It performs a discrete Fourier transform as
+described in the previous section, and returns a set of complex
+coefficients that has the same length as the input time-series.  For
+example \Minput{y = rand([1 100]);} \Minput{Y = fft(y);}
+\Matlab{length(Y)}{ans}{100} More details about \texttt{fft} can be
+obtained using \texttt{help}.
+
+% par explaining the output of fft & fftshift.
+
+What we seek here is a means to convert the output of \texttt{fft}
+into something we understand: the output of \texttt{dfs}.  The
+following \Mlab function achieves this\footnote{For a more thorough
+  discussion, see
+  \url{http://www.mathworks.com/support/tech-notes/1700/1702.html}.},
+and demonstrates the relationship between \Mlab's \texttt{fft} and the
+discrete Fourier series.
+
+\verbatiminput{../figs/L16/dft.m}
+
+Let's examine this function in terms of its three steps:
+\begin{enumerate}
+\item Apply \texttt{fft} to the data-series.  The \texttt{fft}
+  function works regardless of the length (even or odd) of the input
+  time-series \texttt{y}.
+\item Extract only the \texttt{fft} coefficients that are unique.
+  This means discarding the second half of the entries, which
+  correspond to the image frequencies. Since \texttt{N} can be even or
+  odd, we must use rounding to ensure that \texttt{Nu} is an integer;
+  \texttt{ceil} rounds upward, which is correct for any value of
+  \texttt{N}. We then restrict \texttt{Y} to the desired set of
+  values.
+\item Scale the results appropriately, so that they are independent of
+  time-series length, and consistent with the results of \texttt{dfs}.
+\end{enumerate}
+
+\subsection{Spectra, waves, and the Earth}
+
+Fourier analysis decomposes a signal into a set of oscillations, and
+represents the relative contributions of those oscillations on a
+spectrum plot. One of the most commonly encountered oscillations is a
+\textit{vibration}: the oscillatory physical motion of a
+material. Because vibrations are inherently periodic, they are
+amenable to Fourier analysis.
+
+\begin{SCfigure}[1][tb]
+  \centering
+  \includegraphics[width=4.5in]{../figs/L16/GuitarOvertones}
+  \caption{Variance spectrum of the sound produced by a plucked guitar
+    string. Grey lines are individual instances; heavy black line is
+    the average of six instances. Adapted from report by
+    M.~Owen.\vspace{1cm}}
+  \label{fig:guitar}
+\end{SCfigure}
+
+Consider the vibration of a guitar string.  The averaged Fourier
+spectrum of a plucked string is shown in \autoref{fig:guitar}. Note
+the regular peaks in power at multiples of the \textit{fundamental
+  frequency}, which in this case is 110 Hz.  The fundamental frequency
+has the most power (i.e.~it is the loudest), but the vibrations at
+higher frequency contribute substantially to the sound, while
+vibrations at frequencies between the peaks are relatively quiet.
+These regular peaks at frequencies that are multiples of the
+fundamental frequency are known as \textit{overtones}, and their
+contribution is what gives a musical instrument its unique sound.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{../figs/L16/NormalModes.pdf}
+  \caption{Normal modes of a vibrating string that is fixed at its
+    ends. The fundamental mode has the longest wavelength, equal to
+    twice the length of the string, and can be written as $y(x,t) =
+    A(t)\sin\left(\pi x/L\right)$, where $L$ is the length of the
+    string. The others are described by $y(x,t) = A(t)\sin\left(n\pi
+      x/L\right)$ for $n=2,3,...$}
+  \label{fig:normalmodes}
+\end{figure}
+
+Where do overtones come from?  They are associated with a particular
+set of oscillations that have a spatial structure that is unchanging
+with time, and goes to zero at the fixed end-points. Hence they are
+sometimes called \textit{standing waves}. Of course, since they are
+vibrations, the displacement of the string must change with time; this
+can be accommodated with a time-dependent amplitude
+\begin{equation}
+  \label{eq:string}
+  y(x,t) = A(t)\sin\left(n\pi x/L\right) = A_0\sin(\omega_nt)
+  \sin\left(n\pi x/L\right),
+\end{equation}
+where $A_0$ is a constant amplitude, $L$ is the length of the string,
+and $n$ is an integer. Such oscillations are also known as the
+\textit{normal modes} of the string. The wavenumber of each mode is
+defined as
+\begin{displaymath}
+  \kappa_n = \frac{n\pi}{L};
+\end{displaymath}
+$n=1$ corresponds to the fundamental mode, and oscillations with $n>1$
+are overtones.
+
+As we will learn next term when we consider the physics of waves,
+there is a physical relationship between the angular frequency of
+oscillation for each normal mode $\omega_n$ and the mode number
+$n$. This relationship is expressed mathematically as
+\begin{equation}
+  \label{eq:frequencies}
+  \omega_n = c\kappa_n = \frac{cn\pi}{L},
+\end{equation}
+where $c$ is a constant, and a property of the string.  Examining the
+spectrum shown in \autoref{fig:guitar}, we can identify the $n=2$ mode
+with 220 Hz.  We then expect the fundamental mode at 110 Hz, and the
+$n=4$ mode at 440 Hz.  The observations bear this out.
+
+\begin{figure}[hb]
+  \centering
+  \includegraphics[width=\textwidth]{../figs/L16/HoopNormalModes}
+  \caption{Four normal modes of a vibrating hoop. The dashed circle
+    shows the undeformed hoop.\vspace{1cm}}
+  \label{fig:hoop}
+\end{figure}
+
+Any finite vibrating object can possess a set of normal modes.
+Consider, for example, a hoop as shown in \autoref{fig:hoop}.  This is
+different from the string in that its ends are not fixed, but rather
+it ``bites its own tail;'' hence the radial displacement of the hoop
+must be periodic around the hoop with period $2\pi$.  With a little
+imagination, you can generalise from a hoop to a spherical shell, or a
+solid sphere, or even to the Earth!  Just as for the spectral analysis
+of the sound produced by the vibrating guitar string, spectral
+analysis of a carefully recorded seismogram reveals the so-called
+\textit{free oscillations} of the Earth.  \autoref{fig:freeosc} is an
+example of the spectrum of free oscillations recorded after the great
+Sumatra-Andaman earthquake of December 2004.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\textwidth]{../figs/L16/NormalModeSpectrum}
+  \caption{A spectrum of the normal modes of the Earth, also known as
+    free oscillations. The modes labelled S are \textit{spheroidal
+      modes}, where the displacement is toward or away from the centre
+    of the Earth. The modes labelled T are \textit{toroidal modes},
+    which involve displacements that are tangential to the surface of
+    the Earth.  This spectrum was produced by a Fourier analysis of
+    the free oscillations excited during the great Sumatra-Andaman
+    earthquake of December 2004. (Figure credit Jeffrey Parks, Yale
+    University).}
+  \label{fig:freeosc}
+\end{figure}
+
+\setcounter{footnote}{0}
+\include{15_DiffusionI}
+
+\setcounter{footnote}{0}
+\include{16_DiffusionII}
+
+\setcounter{footnote}{0}
+\include{19_WavesI}
+
+\setcounter{footnote}{0}
+\include{20_WavesII}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
