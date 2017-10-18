@@ -9,8 +9,14 @@
 \input{defs}
 
 \newcommand{\runtitle}{Fourier analysis}
+\markboth{\runtitle}{\runtitle}
+\title{DTP lecture notes: \\
+  Fourier analysis of time-series and functions}
+\author{Prof.~Richard Katz}
 
 \begin{document}
+
+\maketitle{}
 
 \section{Fourier Series}
 \label{sec:fourierseries}
@@ -338,7 +344,7 @@ Fourier series generally does not have any problems.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Discrete Fourier Series and Power Spectra I}
+\section{Discrete Fourier Series and Power Spectra}
 \label{sec:dft1}
 
 \paragraph{In this section} We learn about how the same concepts that
@@ -606,7 +612,7 @@ variables).
 \verbatiminput{../figs/L15/dfs.m}
 
 You can download this function, called \texttt{dfs.m}, from 
-\url{http://www.earth.ox.ac.uk/~richardk/teaching/SYM/}.
+\url{http://www.earth.ox.ac.uk/~richardk/teaching/DTP/fourier/}.
 
 Try using it on synthetic time-series.  For example, try
 \Minput{t = linspace(0,2*pi,1002);}
@@ -707,7 +713,7 @@ As a second example, let's work with some real data: an 18-year record
 of total monthly runoff of Cave Creek, in Kentucky,
 France\footnote{Actually, there are 18 years plus 1 month of data in
   this series.  Why the extra month? Download the data from
-  \url{http://www.earth.ox.ac.uk/~richardk/teaching/SYM/CaveCreekData.txt}}.
+  \url{http://www.earth.ox.ac.uk/~richardk/teaching/DTP/fourier/CaveCreekData.txt}}.
 The data are given in hundredths of an inch.
 \autoref{fig:runoffseries}a is a plot of the time-series.  Over the 18
 years of recordings, there are about 18 peaks; this suggests that the
@@ -758,7 +764,7 @@ etc).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Discrete Fourier Series and Spectra II}
+\section{Discrete Fourier Series and FFTs}
 \label{sec:intro_timeseries}
 
 \paragraph{In this section} we'll encounter a special consideration
@@ -1126,17 +1132,798 @@ Sumatra-Andaman earthquake of December 2004.
   \label{fig:freeosc}
 \end{figure}
 
-\setcounter{footnote}{0}
-\include{15_DiffusionI}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\setcounter{footnote}{0}
-\include{16_DiffusionII}
+\section{Diffusion}
+\label{sec:diffusion_2}
 
-\setcounter{footnote}{0}
-\include{19_WavesI}
+\paragraph{In this section} We'll derive the diffusion equation for
+non-steady situations.  We'll then investigate how a spatially
+oscillating temperature field changes with time, due to diffusion.
+This will allow us to apply tools of Fourier analysis to create
+mathematical models of diffusion.
 
-\setcounter{footnote}{0}
-\include{20_WavesII}
+\subsection{The time-dependent diffusion equation}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[height=2.5in]{../figs/L17/heatsourceslab}
+  \caption{Heat flow into and out of a thin slab of rock. (source:
+    \textbf{TS} chap.~4)}
+  \label{fig:thinslab_again}
+\end{figure}
+
+Let's return to the trusty First law of thermodynamics, which tells us
+that energy is conserved.  We'll again consider the case of a slab of
+rock of thickness $\delta y$ as shown in \autoref{fig:thinslab_again}.
+The First law reads
+\begin{equation}
+  \label{eq:firstlaw_time}
+  \diff{U}{t} = \diff{Q}{t},
+\end{equation}
+which says that the rate of change of internal energy is equal to the
+rate of net addition of heat.  Let's treat the right-hand side first.
+The rate of net addition of heat can be broken down into its component
+fluxes as
+\begin{equation}
+  \label{eq:heatfluxes}
+  \diff{Q}{t} = q_\text{in} - q_{out} + q_\text{source}.
+\end{equation}
+In the last lecture, where we considered only steady-state, this sum
+was equal to zero.  When we allow for changes in internal energy, the
+left-hand side of \autoref{eq:firstlaw_time} becomes
+\begin{equation}
+  \label{eq:internalenergy}
+  \diff{U}{t} = \rho c \diff{T}{t}\delta y,
+\end{equation}
+since the changes in internal energy comes only from changes in
+temperature.  In this equation, $\rho$ is the density (kg-m$^{-3}$)
+and $c$ is the specific heat capacity (J-kg$^{-1}$-K$^{-1}$).  Then
+the units of \autoref{eq:internalenergy} are J-m$^{-2}$-sec$^{-1}$,
+which is the same units as the various fluxes~$q$.
+
+Equating the left-hand side and the right-hand side of the First law
+we have
+\begin{align}
+  \label{eq:difn_deriv}
+  \rho c \pdiff{T}{t}\delta y &= q_\text{in} - q_{out} + q_\text{source},\nonumber\\
+                              &= \delta y \left(k\pdifftwo{T}{y} + \rho H\right),
+\end{align}
+and hence we have
+\begin{displaymath}
+  \rho c \pdiff{T}{t} = k\pdifftwo{T}{y} + \rho H.
+\end{displaymath}
+This is the time-dependent diffusion equation with a source term.  It
+can also be written
+\begin{equation}
+  \label{eq:difneqn_source}
+  \pdiff{T}{t} = \kappa\pdifftwo{T}{y} + \frac{H}{c},
+\end{equation}
+where $\kappa = k/(\rho c)$ is the \textit{thermal diffusivity}.  When
+there is no radiogenic heat production, this equation becomes
+\begin{equation}
+  \label{eq:difneqn}
+  \pdiff{T}{t} = \kappa\pdifftwo{T}{y}.
+\end{equation}
+Note the use of partial differentials in equations
+\eqref{eq:difn_deriv}--\eqref{eq:difneqn}.  This is simply because we
+now see that the temperature $T$ varies with both time $t$ and
+position $y$.
+
+\autoref{eq:difneqn} is the canonical diffusion equation in one
+dimension, with constant thermal diffusivity. A few remarks about this
+equation
+\begin{itemize}
+\item It is an equation for temperature $T$ as a function of time $t$
+  and space $y$.  This can be represented mathematically as
+  $T=T(t,y)$.
+\item It is a \textit{linear} equation, because it does not involve
+  nonlinear functions of $T$.
+\item It is a \textit{first-order} partial differential equation in
+  time, because it has a first derivative of $T$ with respect to
+  $t$. To solve it we must therefore specify an \textit{initial
+    condition} in the form of $T(0,y) = f(y)$, where $f(y)$ is some
+  function of position only.
+\item It is a \textit{second-order} partial differential equation in
+  space, because it has a second derivative of $T$ with respect to
+  $y$.  To solve it on a finite domain, we must therefore specify two
+  boundary conditions.  For example, if the domain is $0\le y \le 1$,
+  we could specify the boundary conditions
+  \begin{subequations}
+    \begin{align}
+      T(t,0) &= 0,\\
+      T(t,1) &= 12.
+    \end{align}
+  \end{subequations}
+  Note that in the previous lecture, when we solved the steady-state
+  diffusion equation, we also needed two boundary conditions.  That
+  equation is also second-order in space.
+\end{itemize}
+The rest of the lecture will focus on methods of solving this
+equation.
+
+\subsection{Diffusion in an insulated rod of infinite length}
+
+Let's begin solving the diffusion equation with a simple example.
+We'll consider a perfectly insulated rod of infinite length.  Since
+the rod is insulated, we can assume that temperature is only conducted
+along the rod, in the $y$-direction. By giving the rod infinite
+length, we avoid the neccessity to specify boundary conditions.  We
+still need an initial condition, however.  For reasons that will
+become clear later, let's choose a sinusoidal variation
+\begin{equation}
+  \label{eq:IC}
+  T(0,y) = A\sin\left(\frac{2\pi}{\lambda}y\right),
+\end{equation}
+where $A$ is the amplitude of the variations and $\lambda$ is the
+wavelength (note that when $y=\lambda$, the argument to the sine
+function is $2\pi$, and hence we've gone through a full cycle). The
+problem becomes the following: \textit{how does the initial
+  distribution of temperature evolve with time?}  Another way of
+stating this is \textit{given this initial condition, what is the
+  distribution of temperature at time $t$?}
+
+Our physical intuition tells us that heat should diffuse away from the
+peaks in temperature and towards the troughs.  Our mathematical
+intuition confirms this: at the temperature peaks,
+$\partial^2 T/\partial y^2 < 0$; hence we have
+$\partial T/\partial t < 0$ at the peaks.  At the troughs, the
+situation is reversed, and the temperature should trend upwards.  So
+we should expect the amplitude of the oscillation to decay away with
+time.
+
+With this expectation in mind, let's start with a clever guess.
+Having solved linear equations in the past, we know that the solution
+often takes the form $\expu{\alpha x}$, where $x$ is the independent
+variable.  In this case, our independent variable is $t$, and so we
+could try to solve the equation using the guess
+\begin{equation}
+  \label{eq:ansatz}
+  T(t,y) = A\expu{\alpha t}\sin\left(\frac{2\pi}{\lambda}y\right).
+\end{equation}
+
+Is this the correct form of the solution?  A first check: when $t=0$,
+\autoref{eq:ansatz} returns our initial condition from
+\autoref{eq:IC}.  As a second check, let's plug \autoref{eq:ansatz} in
+the diffusion equation \eqref{eq:difneqn} and see if it works:
+\begin{align}
+  \pdiff{T}{t} &= \kappa\pdifftwo{T}{y}, &&\text{Diffusion equation.}\nonumber\\
+  \alpha A\expu{\alpha t}\sin\left(\frac{2\pi}{\lambda}y\right) &= 
+                                                                  -\kappa\left(\frac{2\pi}{\lambda}\right)^2A\expu{\alpha
+                                                                  t}\sin\left(\frac{2\pi}{\lambda}y\right),&&\text{By plugging in \eqref{eq:ansatz}.}\nonumber\\
+  \label{eq:decayconst}
+  \alpha &= -\kappa\left(\frac{2\pi}{\lambda}\right)^2.&&\text{By cancellation.}
+\end{align}
+So what we find is that as long as $\alpha$ takes the form given in
+\autoref{eq:decayconst}, then our guess solution will work.  Hence we
+can write the solution to our problem as
+\begin{equation}
+  \label{eq:soln1}
+  T(t,y) = A\exp\left[-\left(\frac{2\pi}{\lambda}\right)^2\kappa\, t\right]
+  \sin\left(\frac{2\pi}{\lambda}y\right).
+\end{equation}
+Try plugging this equation into \autoref{eq:difneqn} to verify that it
+is, indeed a solution.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[height=2.5in]{../figs/L18/decayOscillations}
+  \caption{A decaying, sinusoidal temperature variation. The black
+    line is the initial condition; the lighter lines are solutions at
+    subsequent times. The single-stemmed arrows indicate the
+    directions of heat flow; the double-stemmed arrows indicate the
+    change in temperature with time.}
+  \label{fig:decayosc}
+\end{figure}
+
+What does our solution tell us about diffusion?  A few things are
+evident:
+\begin{itemize}
+\item \autoref{eq:decayconst} tells us that the rate of decay is
+  inversely proportional to the square of the wavelength.  Longer
+  wavelength oscillations decay much slower than shorter wavelength
+  oscillations.
+\item \autoref{eq:decayconst} tells us that the rate of decay is
+  proportional to the diffusivity.
+\item \autoref{eq:soln1} tells us that diffusion does not cause a
+  change in the wavelength of the oscillations, it only causes those
+  oscillations to decay in amplitude.
+\item This solution is only valid on an infinite domain.  We did not
+  impose boundary conditions because there are no boundaries!
+\end{itemize}
+
+We can generalise this example to something more useful.  Let's
+consider a more complex initial condition:
+\begin{equation}
+  \label{eq:IC3}
+  T(0,y) = A_1\sin\left(\frac{2\pi}{\lambda_1}y\right) + 
+  A_2\cos\left(\frac{2\pi}{\lambda_2}y\right) +
+  A_3\sin\left(\frac{2\pi}{\lambda_3}y\right),
+\end{equation}
+where $A_i$ and $\lambda_i$ are the amplitude and wavelength of the
+three different sinusoidal oscillations that compose our initial
+distribution of temperature.  Since the governing equation
+\eqref{eq:difneqn} is linear, we know that simpler solutions can be
+added together to create more complex ones.  We can break our problem
+up into three sub-problems, one for each term in \autoref{eq:IC3},
+find their solutions, and then sum them.  Each sub-problem will have a
+solution like \autoref{eq:soln1}, and hence we can immediately write
+that the evolution of our initial condition \eqref{eq:IC3} is given by
+\begin{align}
+  \label{eq:soln3}
+  T(t,y) = &A_1\exp\left[-l_1^2\kappa\,t\right] \sin\left(\frac{2\pi}{\lambda_1}y\right) + \nonumber\\
+           &A_2\exp\left[-l_2^2\kappa\,t\right] \cos\left(\frac{2\pi}{\lambda_2}y\right) + \nonumber\\
+           &A_3\exp\left[-l_3^2\kappa\,t\right]\sin\left(\frac{2\pi}{\lambda_3}y\right),
+\end{align}
+where $l_i = 2\pi/\lambda_i$ is the wavenumber.  We can see from this
+solution that each of the initial oscillations decays at its own rate,
+dependent on its wavelength (and on the thermal diffusivity),
+independent of the others.  The solution is plotted for four different
+times in \autoref{fig:threeDecays}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[height=3in]{../figs/L18/decayThreeOscillations}
+  \caption{A plot of \autoref{eq:soln3} four different times. Note the
+    three superimposed oscillations at $t=0$.  By $\kappa t=25$, the
+    shortest wavelength oscillation has diffused away. By
+    $\kappa t=4000$, the middle wavelength oscillations has diffused
+    away, and the longest wavelength oscillation has decreased in
+    amplitude.}
+  \label{fig:threeDecays}
+\end{figure}
+
+More generally still, if our initial condition is the sum of
+sinusoidal functions in space on an infinite domain, then we can we
+can immediately write down a solution for their temporal evolution
+under diffusion.  But we learned last term that \textit{we can write
+  any periodic function in terms of the sum of sinusoidal functions!
+  So we can apply this solution to any periodic function!}
+
+For example, let's consider a situation where $T(0,y) = f(y)$, with
+$f(y) = f(y+Y)$.  This means that we have an initial condition given
+by some function $f$, which is periodic in the $y$-direction, with
+some period $Y$.  We can use the Fourier series representation of our
+initial condition
+\begin{equation}
+  \label{eq:ICfourier}
+  T(0,y) = a_0 + \sum_{n=0}^\infty\left[a_n\sin(l_n y) + b_n\cos(l_n y)\right],
+\end{equation}
+where $l_n=2\pi/\lambda_n$ is the wavenumber corresponding to each
+entry in the sum.  Given some function $f(y)$, coefficients $a_n$ and
+$b_n$ can be obtained in the usual way, which we learned last term.
+
+Without further ado, we can write down the time-evolution of the
+initial condition as
+\begin{equation}
+  \label{eq:solnfourier}
+  T(t,y) = a_0 + \sum_{n=0}^\infty
+  \exp\left(-l_n^2\kappa t\right)\left[a_n\sin(l_n y) + 
+    b_n\cos(l_n y)\right].
+\end{equation}
+This result is the exact solution of the diffusion equation
+\eqref{eq:difneqn} for the initial condition given by $f(y)$.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[height=2.5in]{../figs/L18/decayFourierOscillations}
+  \caption{Romance, diffusion-style.}
+  \label{fig:fourierDecay}
+\end{figure}
+
+Wow! Fantastic!  We can see this wonderful result in action in
+\autoref{fig:fourierDecay}. Only one period of the function is shown,
+but in fact this pattern repeats every $Y$ units from $-\infty$ to
+$+\infty$.
+
+\subsection{Mathematical lessons about diffusion}
+
+We noted above that the rate of decay for a particular Fourier mode
+under diffusion increases with the wave-number (or the inverse
+wavelength) of the mode.  We can see from \autoref{fig:fourierDecay}
+that because of this, diffusion acts as a \textit{smoother}, rounding
+out sharp edges and blurring the initial condition. Since heat is
+conserved, the integral of $T(t,y)$ must be constant for this model.
+
+\subsection{Solving the infinite-rod diffusion problem with \Mlab}
+
+In the previous section we learned that since each oscillatory
+component of the initial condition decays independently of the others,
+we can use the Fourier series of the initial condition as a means to
+express the effect of diffusion over time.  How do we implement this
+in \Mlab? We can build on the functions we developed last term.
+
+We first need a function that, given an initial distribution of
+temperature, and the time over which diffusion has taken place, will
+return the temperature distribution at that time.  The steps to do
+this are as follows
+\begin{enumerate}
+\item Compute the discrete Fourier series of the initial condition.
+\item Determine the decay constant for each pair of Fourier
+  coefficients $\alpha_n,\beta_n$.
+\item Calculate and apply the amount of decay for each pair of Fourier
+  modes.
+\item Reconstruct and return the diffused temperature function from
+  the decayed Fourier coefficients.
+\end{enumerate}
+
+Here's a function that does the trick:
+
+\verbatiminput{../figs/L18/dfs_diffusion.m}
+
+Using this function, we can solve for the evolution of an arbitrary
+(periodic) distribution of initial temperature in the rod.  Let's try
+an example in \Mlab.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Waves}
+\label{sec:waves_1}
+
+\paragraph{In this section} we'll derive the partial differential
+equation governing wave-motions of a stretched string. We'll find the
+general solution to that equation, and show that it consists of a set
+of arbitrary functions that move forward and backward with time.
+We'll then consider the case of sinusoidal functions as waves, and
+look at the standing wave-pattern generated by two identical
+sinusoidal waves traveling in opposite directions.  We consider the
+general solution for a finite segment of string, and use the Fourier
+series (again!) as a tool to solve for the evolution of specific
+initial conditions. We briefly consider the use of \Mlab to solve the
+wave equation for a finite string.  
+
+\subsection{The wave equation for an ideal streched string}
+
+Consider a string with a mass of $\lambda_0$ per unit length and under
+constant tension $\tau_0$, maintained by equal and opposite forces at
+its ends.  In the absence of any waves, the string is straight; we'll
+assume that it is infinitely long.  Define the $x$-axis as lying along
+the unperturbed string. \EH{1.1}
+
+We're interested in what happens when the string is locally displaced
+from the $x$-axis, i.e.~it is plucked.  The tension in the string will
+pull it back toward its equilibrium position on the axis.  However,
+inertia will cause the string to overshoot this position.  Because of
+the continuity of the string, the disturbance will spread, or
+\textit{propagate}, away from its initial location with time.  We seek
+an equation that governs this process.
+
+To quantify this, we apply Newton's second law ($\sum_i F_i=ma$) to
+any small element of the string of length $\Delta x$. We'll measure
+the displacement from the $x$-axis with the variable $\eta$, and
+assume that the string remains in the $x$-$y$ plane.  Then the
+displacement is an unknown function of position and time,
+$\eta=\eta(x,t)$.  We assume that $\eta$ is sufficiently small that
+\begin{itemize}
+\item The magnitude of the tension $\tau_0$ is constant, independent
+  of $x$ and $t$.
+\item The angle of inclination of the displaced string with respect to
+  the $x$-axis at any point is small.
+\item An element $\Delta x$ of the string can be considered to have
+  moved only in the transverse direction as a result of a wave
+  disturbance.
+\end{itemize}
+We also idealise by neglecting air drag on the string, the stiffness
+of the string, and the effect of gravity.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[height=2.5in]{../figs/L19/StringDiagram}
+  \caption{Diagram of forces acting an element of string $\Delta x$
+    due to the curvature of the string. (source: \textbf{EH} chap.~1)}
+  \label{fig:stringbal}
+\end{figure}
+
+\autoref{fig:stringbal} shows a schematic diagram of a portion of the
+string that has been displaced sideways from its equilibrium
+position. A net force acts on an element of the string $\Delta x$
+because, in general, the angles $\alpha_1$ and $\alpha_2$ (definied in
+the figure) are not equal.  This unbalanced force has a component in
+the $y$-direction given by $\tau_0(\sin\alpha_2 - \sin\alpha_1)$ and
+in the $x$-direction $\tau_0(\cos\alpha_2 - \cos\alpha_1)$.  Recalling
+that both angles are small, we can make a Taylor series expansion of
+the sinusoidal functions
+\begin{align}
+  \sin \alpha &\approx \alpha + \mathcal{O}(\alpha^3)\approx\pdiff{\eta}{x},\nonumber\\
+  \cos \alpha &\approx 1 - \mathcal{O}(\alpha^2)\approx 1.\nonumber
+\end{align}
+The second of these means that to leading order, we can neglect the
+difference in the $x$-component of the force difference.  The first
+means that we can replace $\sin\alpha_n$ with
+$\partial\eta_n/\partial x$, where we have used the partial
+differential because $\eta$ is a function of both space and time.
+
+According to Newton's second law, the net force must be equal to the
+mass times the acceleration of the element of string.  The mass is
+$\lambda_0\Delta x$.  Thus we find that
+\begin{equation}
+  \label{eq:fbal}
+  \tau_0\left(\pdiff{\eta_2}{x} - \pdiff{\eta_1}{x}\right) = 
+  \lambda_0\Delta x\pdifftwo{\eta}{t}.
+\end{equation}
+We now divide through by the length of the element $\Delta x$ and take
+the limit of $\Delta x\rightarrow 0$. The definition of the second
+derivative tells us that
+\begin{displaymath}
+  \lim_{\Delta x\rightarrow 0}\frac{1}{\Delta x}\left(\pdiff{\eta_2}{x}- \pdiff{\eta_1}{x}\right) =
+  \pdifftwo{\eta}{x}.
+\end{displaymath}
+Hence \autoref{eq:fbal} becomes
+\begin{displaymath}
+  \tau_0\pdifftwo{\eta}{x} = \lambda_0\pdifftwo{\eta}{t}.
+\end{displaymath}
+We can write this in the form
+\begin{equation}
+  \label{eq:waveeqn}
+  \pdifftwo{\eta}{x} = \frac{1}{c^2}\pdifftwo{\eta}{t},
+\end{equation}
+where
+\begin{displaymath}
+  c = \left(\frac{\tau_0}{\lambda_0}\right)^{1/2}.
+\end{displaymath}
+\autoref{eq:waveeqn} is the wave equation for an idealised string, and
+$c$ is the speed at which waves propagate along the string.  This is
+the simplest form of a large family of wave equations for different
+media in one, two, and three dimensions.  Similar equations describe
+seismic waves, water waves, and acoustic waves, for example.  By
+obtaining and studying solutions to the wave equation for a string, we
+can learn a lot about waves in general, and their mathematical
+expression.
+
+A few remarks about \autoref{eq:waveeqn}:
+\begin{itemize}
+\item The wave equation is a partial differential equation for the
+  displacement as a function of space and time $\eta(x,t)$.
+\item It is a linear equation.
+\item It is second-order in time, which means that a complete solution
+  requires two initial conditions.
+\item It is second-order in space, which means that a complete
+  solution requires two boundary conditions.
+\end{itemize}
+
+\subsection{A general solution of the one-dimensional wave equation}
+
+One method of solving differential equations is to make a guess of the
+solution, plug it into the differential equation, and see if it works.
+For the wave equation, we might make the guess\EH{1.2}
+\begin{displaymath}
+  \eta = A \sin(ax + bt + d).
+\end{displaymath}
+Substitution of this equation into \autoref{eq:waveeqn} confirms that
+this is indeed a solution as long as $c^2 = (b/a)^2$.  So although
+this represents one possible form that waves on a stretched string can
+take, it does not represent the general case.  What is the most
+general solution of \autoref{eq:waveeqn}?
+
+To find it, we can write the wave equation in the form
+\begin{align}
+  0 &= \pdifftwo{\eta}{x} - \frac{1}{c^2}\pdifftwo{\eta}{t}\nonumber\\
+    &= \left(\pdifftwo{}{x} - \frac{1}{c^2}\pdifftwo{}{t}\right)\eta\nonumber\\
+  \label{eq:wefac}
+    &= \left(\pdiff{}{x} - \frac{1}{c}\pdiff{}{t}\right)\left(\pdiff{}{x} + \frac{1}{c}\pdiff{}{t}\right)\eta.
+\end{align}
+where the differential operation on $\eta$ has been split into two
+factors.  This factorisation is possible when $c$ is not a function of
+$x$ or $t$.  The form of these two factors suggests changing to two
+new variables, $u=x-ct$ and $v=x+ct$.  Then it is possible to show
+that
+\begin{align}
+  \pdiff{}{x} - \frac{1}{c}\pdiff{}{t} &= 2\pdiff{}{u}, & 
+                                                          \pdiff{}{x} + \frac{1}{c}\pdiff{}{t} &= 2\pdiff{}{v}.
+\end{align}
+Hence \autoref{eq:wefac} becomes
+\begin{equation}
+  \label{eq:weuv}
+  \pdifftwomix{\eta}{u}{v} = 0.
+\end{equation}
+\textit{Any solution to \autoref{eq:weuv} is also a solution to
+  \autoref{eq:waveeqn}!} The solution to \autoref{eq:weuv} is fairly
+obvious
+\begin{displaymath}
+  \eta(u,v) = f_1(u) + f_2(v),
+\end{displaymath}
+where $f_1$ and $f_2$ are completely arbitrary functions, unrelated to
+each other and limited only by the physical requirements of the
+problem (e.g.~continuity).  They can also be written:
+\begin{equation}
+  \label{eq:generalsoln}
+  \eta(x,t) = f_1(x-ct) + f_2(x+ct).
+\end{equation}
+In fact, since the wave equation is a linear equation, the functions
+$f_1$ and $f_2$ can be taken to represent the sum of a set of linear
+functions of $x-ct$ and $x+ct$.
+
+\subsection{Harmonic or sinusoidal waves}
+
+Although we have a general solution to the wave equation in
+\autoref{eq:generalsoln}, it is often useful to work with solutions in
+the form of sinusoidal functions.  The reason is that sinusoidal
+functions are \textit{linear} functions with very simple properties
+under differentiation and integration.  Furthermore, we know that an
+arbitrary function can be constructed from the summation of sinusoidal
+functions using Fourier analysis.  So we now review some of the
+properties of sinusoidal functions. \EH{1.3}
+
+Let's consider a traveling wave that is defined by
+\begin{equation}
+  \label{eq:3}
+  \eta = A \cos \frac{2\pi}{\lambda}(x-ct).
+\end{equation}
+We know that cosine is a periodic function with period $2\pi$.  At
+some given, fixed time $t_0$ the wave repeats itself such that
+\begin{equation}
+  \label{eq:1}
+  \frac{2\pi}{\lambda}(x_1-ct_0) + 2\pi = \frac{2\pi}{\lambda}(x_2-ct_0),
+\end{equation}
+where $x_1$ and $x_2$ are the space coordinates where the wave has the
+same amplitude and slope.  Solving this equation we find that
+$\lambda = x_2-x_1$. So we see that $\lambda$ is the
+\textit{wavelength} of the sinusoidal wave.  We can similarly show
+that $T$ is the \textit{period} of the sinusoidal wave, or the amount
+of time between repeats in the phase.  Because the wave is traveling
+at a constant speed, the wavelength and period must be related by
+\begin{equation}
+  \label{eq:clt}
+  c = \frac{\lambda}{T}.
+\end{equation}
+Check the units of this equation to confirm that it is correct.
+
+To simplify the notation, we can introduce the \textit{angular}
+wave-number $\kappa$ and \textit{angular} frequency $\omega$ as
+follows
+\begin{displaymath}
+  \eta = A \cos(\kappa x - \omega t),
+\end{displaymath}
+where
+\begin{align}
+  \kappa &= \frac{2\pi}{\lambda} & &\text{and} & 
+                                                 \omega &= \frac{2\pi c}{\lambda} = \frac{2\pi}{T} = c\kappa.
+\end{align}
+
+It is often convenient to describe waves using Euler's formula,
+\begin{equation}
+  \label{eq:5}
+  \expu{i\theta} = \cos\theta + i\sin\theta, 
+\end{equation}
+where $i=\sqrt{-1}$ is the unit imaginary number.  Our sinusoidal wave
+is then the real part of
+\begin{displaymath}
+  \eta = A\expu{i(\kappa x - \omega t)},
+\end{displaymath}
+where we have taken $A$ to be pure real. If we want to use a complex
+amplitude, then we can denote it by adding a cup over the symbol
+\begin{equation}
+  \label{eq:complexA}
+  \breve{A}\equiv A_r + iA_i \equiv \vert\breve{A}\vert\expu{i\alpha},
+\end{equation}
+where $\tan\alpha = A_i/A_r$.  Then $\alpha$ is the phase angle, and
+we can write
+\begin{align}
+  \eta &= \breve{A}\expu{i(\kappa x - \omega t)},\nonumber\\
+       &= A \expu{i(\kappa x - \omega t+\alpha)},\nonumber
+\end{align}
+which represents the physical wave
+\begin{displaymath}
+  \eta = A\cos(\kappa x - \omega t+\alpha).
+\end{displaymath}
+We thus have a way of easily interpreting a complex amplitude as a
+constant phase angle.
+
+\subsection{Standing sinusoidal waves}
+
+Let's continue our study of sinusoidal waves by considering two such
+waves of equal magnitude, traveling in opposite directions along a
+string.  We'll describe these waves as \EH{1.4}
+\begin{align}
+  \eta_1 &= \frac{1}{2}A\expu{i(\kappa x - \omega t)},\nonumber\\
+  \eta_2 &= -\frac{1}{2}A\expu{-i(\kappa x + \omega t)},\nonumber
+\end{align}
+where $A$ is a real number.  The negative signs in the formula for
+$\eta_2$ force the two waves cancel each other at the origin at all
+times.  When both waves are present on the string,
+\begin{align}
+  \eta &= \eta_1 + \eta_2,\nonumber\\
+       &= \frac{1}{2}A(\expu{i\kappa x} - \expu{-i\kappa x})\expu{-i\omega t},\nonumber\\
+       &= iA\sin(\kappa x)\expu{-i\omega t},\nonumber
+\end{align}
+where we have used the identity
+$\sin\theta=(\expu{i\theta} - \expu{-i\theta})/(2i)$. Taking the real
+part of this formula gives the physical wave,
+\begin{equation}
+  \label{eq:standwave}
+  \eta = A \sin(\kappa x)\sin(\omega t).
+\end{equation}
+This formula no longer has the space and time variables related as
+$x\pm ct$.  Nevertheless, \autoref{eq:standwave} is a valid solution
+of the wave equation.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[height=2.5in]{../figs/L19/StandingWave}
+  \caption{A standing wave shown at various times. (source:
+    \textbf{EH} chap.~1)}
+  \label{fig:standwave}
+\end{figure}
+
+The wave pattern represented by \autoref{eq:standwave} is called a
+\textit{standing wave} because it does not advance along the string.
+All the elements of the string oscillate in phase, and at any fixed
+position, the string simply vibrates back and forth with the amplitude
+$A\sin(\kappa x)$.  \autoref{eq:standwave} is plotted for various
+times in \autoref{fig:standwave}.  The points with zero amplitude for
+all $t$ are called \textit{nodes}.  If rigid boundaries are introduced
+at any pair of nodes without changing the tension of the string, then
+the standing-wave pattern is not altered.
+
+What are all the possible standing-wave patterns that can exist on a
+stretched string? (We covered this briefly in the last lecture of
+Hilary term).  Suppose we fix the string with rigid boundaries at
+$x=0$ and $x=l$.  For nodes to exist at these two points, it is
+necessary that the wave number $\kappa$ have one of the following
+values, indexed by the integer $n$
+\begin{equation}
+  \label{eq:2}
+  \kappa_n = n\frac{\pi}{l},\;\;\;\text{with}\;\;\;n=1,2,3,...
+\end{equation}
+which makes $\sin(\kappa_n x)$ vanish at $x=l$.  The corresponding
+resonant frequencies are
+\begin{equation}
+  \label{eq:4}
+  \omega_n = c\kappa_n = n\frac{\pi c}{l} = n\omega_1,
+\end{equation}
+where $\omega_1 = \pi c/l$ is the \textit{fundamental} mode. The
+frequencies of higher modes, also called \textit{overtones}, are
+\textit{harmonics} (integer multiples) of the fundamental.  Because
+the wave equation is linear, the entire family of permitted standing
+waves can exist on the string simultaneously, each with arbitrary
+(small) amplitude.  Each is independent of the others.
+
+
+\subsection{The general motion of a finite string segment}
+
+In this section we're again considering a segment of string that is
+fixed at its ends, at $x=0,l$.  \EH{1.6} Last lecture we found that
+each of the \textit{normal modes} of the segment is a standing wave
+with nodes at the segment ends.  We can describe the entire family of
+possible normal modes using a summation
+\begin{equation}
+  \label{eq:sumsoln}
+  \eta(x,t) = \sum_{n=1}^\infty \sin(\kappa_nx)
+  \left[a_n\cos(\omega_nt) + b_n\sin(\omega_nt)\right],
+\end{equation}
+where $a_n$ and $b_n$ are the amplitudes of the standing waves of
+frequency $\omega_n$.  The frequencies and wavenumbers are related by
+the equation $\omega_n = c\kappa_n$, with $\kappa_n$ determined by the
+boundary conditions that give
+\begin{displaymath}
+  \kappa_n = n\pi/l,\;\;\;n=1,2,3,...
+\end{displaymath}
+
+Does \autoref{eq:sumsoln} look familiar?  It should!  It is a Fourier
+series.  Recall that for diffusion, we wrote the initial condition as
+a Fourier series summation, and then obtained its evolution with time
+by multiplying each term by a decaying exponential with the
+appropriate decay constant.  The diffusion equation is linear, and
+hence each decaying mode was independent of the others.  The same is
+true for the wave equation, which is also linear.  The initial
+condition of the string can be decomposed into Fourier modes; each
+Fourier mode evolves independently.  For the wave equation, however,
+each Fourier mode \textit{oscillates} instead of decaying.  Let's see
+how this works mathematically.
+
+There are two ways to start the string vibrating: first, we could give
+it an initial displacement, with no initial velocity (like plucking a
+guitar string); second, we could give it an initial velocity, with no
+initial displacement (like a piano hammer hitting a piano string).
+We'll denote the initial displacement as $\eta_0(x)$ and the initial
+velocity as $\dot{\eta}_0(x)$. Examining \autoref{eq:sumsoln} and
+recalling the properties of sine and cosine functions, we can see that
+in the case of zero initial displacement we have $a_n=0$, while for
+zero initial velocity we have $b_n=0$.  In particular, we can write
+the initial condition in terms of two Fourier series
+\begin{align}
+  \eta_0(x) &= \sum_{n=1}^\infty a_n\sin(\kappa_nx),\\
+  \dot{\eta}_0(x) &= \sum_{n=1}^\infty b_n\omega_n\sin(\kappa_nx).
+\end{align}
+In the second equation, you will note the appearance of the
+$\omega_n$. The dot in $\dot{\eta}_0$ indicates the time-derivative of
+displacement; since \autoref{eq:sumsoln} represents the displacement,
+we must take its time-derivative before setting $t=0$ and equating
+with $\dot{\eta}_0(x)$.  In taking this derivative we obtain the
+factor of $\omega_n$.
+
+\paragraph{Example: plucked string}
+As an example, let's consider a case with $\dot{\eta}_0(x)=0$.
+Suppose a string is plucked to give the initial condition
+\begin{equation}
+  \label{eq:pluckedIC}
+  \eta_0(x) =
+  \begin{cases}
+    \frac{2A}{l}x & \text{for $0\le x\le l/2$},\\
+    \frac{2A}{l}(l-x) & \text{for $l/2 < x\le l$},
+  \end{cases}
+\end{equation}
+as shown in the top panel of \autoref{fig:plucked}.
+
+\begin{SCfigure}[1][ht]
+  \includegraphics[height=3in]{../figs/L20/PluckedString}
+  \caption{Initial condition and subsequent evolution of a plucked
+    string.  (source: \textbf{EH} chap.~1)\vspace{1in}}
+  \label{fig:plucked}
+\end{SCfigure}
+
+We have already established that all $b_n=0$ because the string has no
+initial velocity.  To find $a_n$ we use the formula
+\begin{align}
+  a_n &= \frac{2}{2l}\int_0^{2l}\eta_0(x)\sin\frac{2\pi nx}{2l}\infd x,\nonumber\\
+      &= \frac{2}{l}\int_0^{l}\eta_0(x)\sin\frac{\pi nx}{l}\infd x,
+\end{align}
+where we have taken the full period of oscillation as $2l$, and then
+simplified the integral using symmetry properties of the initial
+condition.  Substituting \autoref{eq:pluckedIC} gives the integral
+\begin{displaymath}
+  a_n = \frac{4A}{l}\left[\int_0^{l/2}\frac{x}{l}\sin\frac{\pi nx}{l}\infd x + 
+    \int_{l/2}^l\left(1-\frac{x}{l}\right)\sin\frac{\pi nx}{l}\infd x\right].
+\end{displaymath}
+Using the tricks that you learned last term, this can be evaluated as
+\begin{equation}
+  \label{eq:4}
+  a_n = \frac{8A}{\pi^2n^2}(-1)^{(n-1)/2},\;\;\;n=1,3,5,...
+\end{equation}
+Hence the initial shape of the string is given by the Fourier series
+\begin{equation}
+  \label{eq:5}
+  \eta_0(x) = \frac{8A}{\pi^2}\left(\frac{1}{1^2}\sin\frac{\pi x}{l} - 
+    \frac{1}{3^2}\sin\frac{3\pi x}{l} + ...\right).
+\end{equation}
+Referring back to the general solution \autoref{eq:sumsoln}, we can
+write a formula for the displacement of the string at any later time
+as
+\begin{equation}
+  \label{eq:6}
+  \eta(x,t) = \frac{8A}{\pi^2}\left(\frac{1}{1^2}\sin\frac{\pi x}{l}\cos\omega_1t - 
+    \frac{1}{3^2}\sin\frac{3\pi x}{l}\cos 3\omega_1t + ...\right),
+\end{equation}
+where $\omega_1 = c\kappa_1 = \pi c/l$ is the fundamental frequency
+and $T_1 = 2\pi/\omega_1$ is the fundamental
+period. \autoref{fig:plucked} shows the inital displacement of the
+string, and subsequent displacements for $t>0$.
+
+\subsection{Computing the evolution of an initial displacement with
+  \Mlab}
+
+As with diffusion, it is possible to use the discrete Fourier series
+to compute the evolution of an initial displacement of the string.
+This case is different, however, because we need to restrict our
+series to only sine terms.  This is evident if you look back to
+\autoref{eq:sumsoln} and set $t=0$.  It is also clear if you consider
+that $\eta$ must always equal zero at its end-points, $x=0$ and $x=l$.
+
+The following \Mlab function computes the sine series of an arbitrary
+initial condition \texttt{eta0} (\textit{displacement only}!) and then
+computes the displacement \texttt{eta} at times specified in the
+vector \texttt{time}.  The first and last entries in \texttt{eta0}
+must be zero, and there must be an even number of entries in vectors
+\texttt{x} and \texttt{eta0}.
+
+\verbatiminput{../figs/L20/dfs_stringwaves.m}
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[height=2.5in]{../figs/L20/StringEvolution}
+  \caption{Evolution of an initial displacement to a string, computed
+    with \texttt{dfs\_stringwaves.m}.}
+  \label{fig:stringevol}
+\end{figure}
+
+The evolution of a prescribed initial condition $\eta_0(x)$ (blue) is
+shown in \autoref{fig:stringevol}.  Each line represents the solution
+at a different time, up to $t=1$, which is one half of the fundamental
+period.  This figure was generated with the following \Mlab commands:
+\Minput{x = linspace(0,100,1000);} \Minput{eta0 = sin(pi*x/100) -
+  interp1([0 35 40 45 100],[0 0 0.4 0 0],x);} \Minput{time = [0 10 35
+  50 65 90 100];} \Minput{eta = dfs\_stringwaves(x,eta0,1,time);}
+\Minput{p = plot(x,eta);} \Minput{legend(p,num2str(time'));}
 
 \end{document}
 

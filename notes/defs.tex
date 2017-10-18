@@ -1,0 +1,66 @@
+\protect{\renewcommand{\arraystretch}{1.2}}
+\pagestyle{myheadings}
+\pagenumbering{arabic}
+\protect{\setcounter{page}{1}}
+\raggedbottom
+\tolerance=10000
+\setlength{\parskip}{0.5em}
+
+\definecolor{Mygrey}{gray}{0.975}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.55}
+
+%% Margin references to books
+\newcommand{\MD}[1]{\marginpar{\raggedright\bf MD\ #1}}
+\newcommand{\DA}[1]{\marginpar{\raggedright\bf DA\ #1}}
+\newcommand{\PP}[1]{\marginpar{\raggedright\bf P\ #1}}
+\newcommand{\TS}[1]{\marginpar{\raggedright\bf TS\ #1}}
+\newcommand{\EH}[1]{\marginpar{\raggedright\bf EH\ #1}}
+
+%% Grey boxes and other shortcuts.
+\newcommand{\bx}[1]{\noindent\fcolorbox{black}{Mygrey}{\parbox{\textwidth}{#1}}\\[-1mm]}
+\newcommand{\bxc}[1]{\noindent\fcolorbox{black}{Mygrey}{\parbox{\textwidth}{\centering{}#1}}\\[-1mm]}
+\newcommand{\bqx}[1]{\noindent\fcolorbox{black}{Mygrey}{\parbox[t]{15cm}{#1}}\\[-2mm]}
+\newcommand{\Eref}[1]{Equation~(\ref{eq:#1})}
+\newcommand{\eref}[1]{equation~(\ref{eq:#1})}
+\newcommand{\Sec}[1]{Section~\ref{sec:#1}}
+\newcommand{\question}{\noindent\textbf{Question:}\xspace}
+\newcommand{\labtitle}[2]{\begin{center}\Huge{Laboratory #1}\\\Large{#2}\end{center}}
+
+%% Matlab
+\newcommand{\Mlab}{\textsc{Matlab}\xspace}
+\newcommand{\Minput}[1]{\newline\indent\indent\texttt{>> #1}}
+\newcommand{\Matlab}[3]{\\[2mm]\indent\indent\begin{minipage}{12cm}{
+        \setlength{\parindent}{5mm}
+        \noindent\texttt{>> #1}\nopagebreak[4]\\
+        \noindent\texttt{#2 = }\nopagebreak[4]\\[2mm]
+        \indent\indent\parbox{5cm}{\texttt{#3}}}\end{minipage}\\[2mm]}
+\newcommand{\Moutput}[2]{\newline\indent\indent\texttt{#1 = }\newline
+        \indent\indent\indent\indent\texttt{#2}\newline}
+\newcommand{\qu}{\textquotesingle}
+
+%% Math
+\newcommand{\bv}[1]{\mbox{{\bf #1}}}
+\newcommand{\Grad}{\mbox{\boldmath $\nabla$}}
+\newcommand{\Div}{\Grad\!\cdot}
+\newcommand{\Curl}{\Grad\!\times}
+\newcommand{\delsq}{\nabla^2}
+\newcommand{\mean}[1]{\left\langle{#1}\right\rangle}
+\newcommand{\infd}{\textrm{d}}
+\newcommand{\diff}[2]{\frac{\infd #1}{\infd #2}}
+\newcommand{\difftwo}[2]{\frac{\infd^2 {#1}}{\infd {#2}^2}}
+\newcommand{\pdiff}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pdiffcon}[3]{\left(\frac{\partial #1}{\partial #2}\right)_{#3}}
+\newcommand{\pdifftwo}[2]{\frac{\partial^2 {#1}}{\partial {#2}^2}}
+\newcommand{\pdifftwomix}[3]{\frac{\partial^2 {#1}}{\partial {#2}\,\partial {#3}}}
+\newcommand{\vel}{\bv{v}}
+\newcommand{\expu}[1]{\textrm{e}^{#1}}
+\newcommand{\ehat}{\bv{e}}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+% make autoref references nicer
+\makeatletter
+\def\tagform@#1{\maketag@@@{\ignorespaces#1\unskip\@@italiccorr}}
+\let\orgtheequation\theequation
+\def\theequation{(\orgtheequation)}
+\makeatother
