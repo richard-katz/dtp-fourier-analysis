@@ -108,15 +108,15 @@ for details.
 \textit{Data structures} are simply a way to bundle together variables
 of different types.  Suppose we're keeping track of the attributes of
 our friends using \Mlab.  We might have a friend named Jo,
-\Matlab{Jo~=~struct(\qu{}Age\qu{},19,\qu{}Col\qu{},\qu{}St.~Annes\qu{},\qu{}Sgl\qu{},1,\qu{}Mob\qu{},\qu{}07974-456789\qu{})}
-{Jo}{Age:~19\\Col:~\qu{}St.~Annes\qu{}\\Sgl:~1\\Mob:~\qu{}07974-456789\qu{}}
-and another friend named Sam, \Minput{Sam.Age = 20;} \Minput{Sam.Col =
+\Matlab{Jo~=~struct(\qu{}Age\qu{},25,\qu{}Col\qu{},\qu{}St.~Annes\qu{},\qu{}Sgl\qu{},1,\qu{}Mob\qu{},\qu{}07974456789\qu{})}
+{Jo}{Age:~25\\Col:~\qu{}St.~Annes\qu{}\\Sgl:~1\\Mob:~\qu{}07974456789\qu{}}
+and another friend named Sam, \Minput{Sam.Age = 23;} \Minput{Sam.Col =
   \qu{}Lincoln\qu{};} \Minput{Sam.Sgl = 0;}
 \Minput{Sam.Mob = \qu{}unknown\qu{};}\\
 Both of these methods are acceptable for creating structures in \Mlab.
 
 To use the data within a structure, \Matlab{S = Sam.Age +
-  Jo.Age}{S}{39}
+  Jo.Age}{S}{48}
 
 Many \Mlab functions use structures as input or output. You can use
 them in your own functions, too. Experiment on the command line to
@@ -184,10 +184,10 @@ learn more.
   \item Comment on the relative magnitude of each of these peaks (as
     well as any others that you see) in the spectrum.
   \end{enumerate}
-\item For this problem, we'll again analyse the time-series from
-  Lisiecki and Raymo that you worked with in Laboratory 5.  Download
-  the data again, if necessary (LisieckiRaymoData.txt), and load it
-  into \Mlab.
+\item For this problem, we'll analyse a time-series from Lisiecki and
+  Raymo (\href{http://dx.doi.org/10.1029/2004PA001071}
+  {10.1029/2004PA001071}).  Download the data (LisieckiRaymoData.txt),
+  and load it into \Mlab.
   \begin{enumerate}
   \item Interpolate the data from the previous 1 million years onto a
     regularly spaced series with time interval of 1000 years, as you
@@ -374,14 +374,13 @@ which lines were added to the plot.
   condition must NOT be $\eta_0(x) = \sin\frac{\pi x}{l}$ (it must be
   something more complicated).  Note that the initial condition must
   respect the boundary conditions at the ends of the string.
-\item \textbf{[bonus for the keen]} The function
-  \texttt{dfs\_stringwaves} computes the evolution of the string's
-  displacement after some initial displacement $\eta_0(x)$ but with
-  zero initial velocity $\dot{\eta}_0(x)$.  In general, a string could
-  vibrate due to a combination of an initial displacement and an
-  initial velocity.  Extend the function \texttt{dfs\_stringwaves} to
-  accommodate this generalisation.  Your new function should have the
-  interface
+\item The function \texttt{dfs\_stringwaves} computes the evolution of
+  the string's displacement after some initial displacement
+  $\eta_0(x)$ but with zero initial velocity $\dot{\eta}_0(x)$.  In
+  general, a string could vibrate due to a combination of an initial
+  displacement and an initial velocity.  Extend the function
+  \texttt{dfs\_stringwaves} to accommodate this generalisation.  Your
+  new function should have the interface
   \begin{center}
     \texttt{function eta = dfs\_stringwaves(x,eta0,eta0dot,c,time)}
   \end{center}
@@ -392,3 +391,8 @@ which lines were added to the plot.
 \end{enumerate}
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
