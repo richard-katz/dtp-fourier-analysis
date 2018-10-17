@@ -50,6 +50,8 @@ for i=1:length(time)
   pause(0.1);
 end
 
+pause
+
 % demo 2
 eta_b = dfs_stringwaves(x,eta0_b,1,time);
 for i=1:length(time)
@@ -58,12 +60,14 @@ for i=1:length(time)
   pause(0.1);
 end
 
+pause
+
 % demo 3
 eta = dfs_stringwaves(x,eta0_a+eta0_b,1,time);
 for i=1:length(time)
   plot(x,eta(:,i)); axis([0 100 -1.5 1.5]);
   title(['time =',num2str(time(i),'%.2f')]);
-  pause(0.1);
+  pause(0.2);
 end
 
 
