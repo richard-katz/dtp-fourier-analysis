@@ -297,10 +297,8 @@ Let's calculate a Fourier series of the square wave from
         r}{T}t\right)\,\infd t + \int_{0}^{T/2}(1)\sin\left(\frac{2\pi
         r}{T}t\right)\,\infd t\right] && \text{split the integral into
                                          two parts}\nonumber\\
-    &= \frac{4}{T}\int_{0}^{T/2}g(t)\sin\left(\frac{2\pi
+    &= \frac{4}{T}\int_{0}^{T/2}(1)\sin\left(\frac{2\pi
         r}{T}t\right)\,\infd t&& \text{by exploiting symmetry about $t=0$}\nonumber\\
-    &= \frac{4}{T}\int_{0}^{T/2}\sin\left(\frac{2\pi
-        r}{T}t\right)\,\infd t&& \text{by substituting for $g(t)$}\nonumber\\
     &= -\frac{4}{T}\left(\frac{T}{2\pi r}\right)\left[\cos\left(\frac{2\pi
           r}{T}t\right)\right]_{0}^{T/2}&& \text{by integration}\nonumber\\
     &= -\frac{2}{\pi r}[\cos(\pi r) - \cos(0)] = \frac{2}{\pi r}[1 -
@@ -456,16 +454,14 @@ At larger harmonic number $k$, the frequency of the corresponding
 oscillation grows (in other words, the period shrinks).  What is the
 largest frequency (smallest period) that can be resolved?
 Equivalently, what is the maximum harmonic number $k$ in the summation
-in \autoref{eq:discretefourier_2}? Think back to what you learned
-about \textit{aliasing} in problem 4 of Laboratory 5 from this term:
-to represent an oscillation, you need to \textit{sample it at least
-  twice per period}.  This means that for a given sampling rate
-$\Delta t$, the smallest period that you can hope to capture is the
-one with a $T_\text{min}=2\Delta t$, corresponding to a harmonic
-number $k_\text{max}=N/2$.  This value of $k$ is known as the
-\textit{Nyquist frequency}; it is the largest frequency that we can
-resolve in a time-series. In practise, for $N$ odd, the best we can do
-is $T_\text{min}=2\Delta t N/(N-1)$ or
+in \autoref{eq:discretefourier_2}? To represent an oscillation, you
+need to \textit{sample it at least twice per period}.  This means that
+for a given sampling rate $\Delta t$, the smallest period that you can
+hope to capture is the one with a $T_\text{min}=2\Delta t$,
+corresponding to a harmonic number $k_\text{max}=N/2$.  This value of
+$k$ is known as the \textit{Nyquist frequency}; it is the largest
+frequency that we can resolve in a time-series. In practise, for $N$
+odd, the best we can do is $T_\text{min}=2\Delta t N/(N-1)$ or
 \begin{displaymath}
   k_\text{max} = \frac{N-1}{2}.
 \end{displaymath} 
