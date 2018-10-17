@@ -1386,7 +1386,7 @@ some period $Y$.  We can use the Fourier series representation of our
 initial condition
 \begin{equation}
   \label{eq:ICfourier}
-  T(0,y) = a_0 + \sum_{n=0}^\infty\left[a_n\sin(l_n y) + b_n\cos(l_n y)\right],
+  T(0,y) = a_0 + \sum_{n=1}^\infty\left[a_n\sin(l_n y) + b_n\cos(l_n y)\right],
 \end{equation}
 where $l_n=2\pi/\lambda_n$ is the wavenumber corresponding to each
 entry in the sum.  Given some function $f(y)$, coefficients $a_n$ and
@@ -1396,7 +1396,7 @@ Without further ado, we can write down the time-evolution of the
 initial condition as
 \begin{equation}
   \label{eq:solnfourier}
-  T(t,y) = a_0 + \sum_{n=0}^\infty
+  T(t,y) = a_0 + \sum_{n=1}^\infty
   \exp\left(-l_n^2\kappa t\right)\left[a_n\sin(l_n y) + 
     b_n\cos(l_n y)\right].
 \end{equation}
